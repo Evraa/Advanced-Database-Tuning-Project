@@ -40,8 +40,8 @@ with open("user.json", "w") as write_file:
             user_id = fake.md5(raw_output=False)
         user_ids.append(user_id)
         
-        reserve_info = {}
         ev = randint(0, 10)
+        reserve_info = {}
         if role == 'fan':
             for l in range (ev):
                 match_id = random.choice(match_ids)
