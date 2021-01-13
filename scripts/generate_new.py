@@ -7,6 +7,8 @@ import datetime
 
 
 itrs = 1*5
+TEAMS_NUM = 1000
+STADIUMS_NUM = 100
 fake = Faker('en_US')
 
 #unique match ids
@@ -20,7 +22,7 @@ for i in range (itrs):
 #unique teams
 teams_names = []
 teams_ids = []
-for i in range (1000):
+for i in range (TEAMS_NUM):
     team = fake.profile()['company']
     while team in teams_names:
         team = fake.profile()['company']
@@ -35,7 +37,7 @@ for i in range (1000):
 stads_names = []
 stads_ids = []
 stad_x_y = {}
-for i in range (100):
+for i in range (STADIUMS_NUM):
     stad = fake.city()
     while stad in stads_names:
         stad = fake.city()
@@ -51,12 +53,12 @@ data = []
 usernames = []
 user_ids = []
 managers = []
-with open("user.json", "w") as write_file:
+with open("users.json", "w") as write_file:
     for i in range(itrs):
         if i % 1000 == 0: print (f"user:  Iteration: {i}")
         ev = random.randint(0, 2)
 
-        role = 'manage' if ev==0 else 'fan'
+        role = 'manage' if (ev==0 or i==0) else 'fan'
 
         #unique
         username = fake.profile()['name']
@@ -99,7 +101,7 @@ with open("user.json", "w") as write_file:
 matches_picked = []
 managers_taken = []
 data_y = []
-with open("match.json", "w") as write_file:
+with open("matches.json", "w") as write_file:
     for i in range(itrs):
         if i % 1000 == 0: print (f"Match:  Iteration: {i}")
         #pick random match id
@@ -114,7 +116,8 @@ with open("match.json", "w") as write_file:
                 for recv in dic['reservations']:
                     if m_id == dic['reservations'][recv]['match_id'] and dic['username'] not in users_ids:
                         users_ids.append(dic['_id'])
-        
+
+        data = []
         #pick one random manager
         manager_user = random.choice(managers)
 
@@ -128,7 +131,7 @@ with open("match.json", "w") as write_file:
 
         
         my_dict = {
-                    'match_id':m_id,
+                    '_id':m_id,
                     'referee':fake.profile()['name'],
                     'date_time':fake.date_time().strftime('%Y-%m-%dT%H:%M:%S.%f'),
                     'teams':{
@@ -152,39 +155,41 @@ with open("match.json", "w") as write_file:
 
 
 data = []
-with open("team.json", "w") as write_file:
-    for i in range(1000):
+with open("teams.json", "w") as write_file:
+    for i in range(TEAMS_NUM):
         if i % 100 == 0: 
             print (f"Team:  Iteration: {i}")
-            team_id = random.choice(teams_ids)
-            teams_ids.remove(team_id)
-            team_name = random.choice(teams_names)
-            teams_names.remove(team_name)
+        team_id = random.choice(teams_ids)
+        teams_ids.remove(team_id)
+        team_name = random.choice(teams_names)
+        teams_names.remove(team_name)
 
-            my_dict={
-                '_id':team_id,
-                'team_name':team_name
-            }
+        my_dict={
+            '_id':team_id,
+            'team_name':team_name
+        }
+        data.append(my_dict)
+    json.dump(data, write_file)
+
 
 
 data = []
-with open("stadium.json", "w") as write_file:
-    for i in range(100):
+with open("stadiums.json", "w") as write_file:
+    for i in range(STADIUMS_NUM):
         if i % 10 == 0: 
             print (f"stadium:  Iteration: {i}")
-            stad_id = random.choice(stads_ids)
-            stads_ids.remove(stad_id)
-            stads_name = random.choice(stads_names)
-            stads_names.remove(stads_name)
+        stad_id = random.choice(stads_ids)
+        stads_ids.remove(stad_id)
+        stads_name = random.choice(stads_names)
+        stads_names.remove(stads_name)
 
-            my_dict={
-                '_id':stad_id,
-                'stad_name':stads_name,
-                'width':stad_x_y[stads_name][0],
-                'height':stad_x_y[stads_name][1]
-            }
-
-    
-        
+        my_dict={
+            '_id':stad_id,
+            'stad_name':stads_name,
+            'width':stad_x_y[stads_name][0],
+            'height':stad_x_y[stads_name][1]
+        }
+        data.append(my_dict)
+    json.dump(data, write_file)
 
     
