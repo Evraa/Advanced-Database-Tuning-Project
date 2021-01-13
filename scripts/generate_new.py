@@ -6,7 +6,7 @@ import datetime
 
 
 
-itrs = 1*5
+itrs = 1000000
 TEAMS_NUM = 1000
 STADIUMS_NUM = 100
 fake = Faker('en_US')
@@ -14,9 +14,9 @@ fake = Faker('en_US')
 #unique match ids
 match_ids = []
 for i in range (itrs):
-    match_id = fake.md5(raw_output=False)
+    match_id = {"$oid": fake.hexify('^^^^^^^^^^^^^^^^^^^^^^^^')}
     while match_id in match_ids:
-        match_id = fake.md5(raw_output=False)
+        match_id = {"$oid": fake.hexify('^^^^^^^^^^^^^^^^^^^^^^^^')}
     match_ids.append(match_id)
 
 #unique teams
@@ -28,9 +28,9 @@ for i in range (TEAMS_NUM):
         team = fake.profile()['company']
     teams_names.append(team)
 
-    team_id = fake.md5(raw_output=False)
+    team_id = {"$oid": fake.hexify('^^^^^^^^^^^^^^^^^^^^^^^^')}
     while team_id in teams_ids:
-        team_id = fake.md5(raw_output=False)
+        team_id = {"$oid": fake.hexify('^^^^^^^^^^^^^^^^^^^^^^^^')}
     teams_ids.append(team_id)
 
 #unique stads
@@ -44,9 +44,9 @@ for i in range (STADIUMS_NUM):
     stads_names.append(stad)
     stad_x_y[stad] = [randint(2,15),randint(2,15)]
 
-    stads_id = fake.md5(raw_output=False)
+    stads_id = {"$oid": fake.hexify('^^^^^^^^^^^^^^^^^^^^^^^^')}
     while stads_id in stads_ids:
-        stads_id = fake.md5(raw_output=False)
+        stads_id = {"$oid": fake.hexify('^^^^^^^^^^^^^^^^^^^^^^^^')}
     stads_ids.append(stads_id)
 
 data = []
@@ -68,9 +68,9 @@ with open("users.json", "w") as write_file:
         usernames.append(username)
 
         #unique
-        user_id = fake.md5(raw_output=False)
+        user_id = {"$oid": fake.hexify('^^^^^^^^^^^^^^^^^^^^^^^^')}
         while user_id in user_ids:
-            user_id = fake.md5(raw_output=False)
+            user_id = {"$oid": fake.hexify('^^^^^^^^^^^^^^^^^^^^^^^^')}
         user_ids.append(user_id)
         
         ev = randint(0, 10)
