@@ -12,10 +12,40 @@ fake = Faker('en_US')
 #unique match ids
 match_ids = []
 for i in range (itrs):
-    match_id = fake.md5(raw_output=False),
+    match_id = fake.md5(raw_output=False)
     while match_id in match_ids:
-        match_id = fake.md5(raw_output=False),
+        match_id = fake.md5(raw_output=False)
     match_ids.append(match_id)
+
+#unique teams
+teams_names = []
+teams_ids = []
+for i in range (1000):
+    team = fake.profile()['company']
+    while team in teams_names:
+        team = fake.profile()['company']
+    teams_names.append(team)
+
+    team_id = fake.md5(raw_output=False)
+    while team_id in teams_ids:
+        team_id = fake.md5(raw_output=False)
+    teams_ids.append(team_id)
+
+#unique stads
+stads_names = []
+stads_ids = []
+stad_x_y = {}
+for i in range (100):
+    stad = fake.city()
+    while stad in stads_names:
+        stad = fake.city()
+    stads_names.append(stad)
+    stad_x_y[stad] = [randint(2,15),randint(2,15)]
+
+    stads_id = fake.md5(raw_output=False)
+    while stads_id in stads_ids:
+        stads_id = fake.md5(raw_output=False)
+    stads_ids.append(stads_id)
 
 data = []
 usernames = []
@@ -88,18 +118,27 @@ with open("match.json", "w") as write_file:
         #pick one random manager
         manager_user = random.choice(managers)
 
+        #home team
+        team_x = random.choice(teams_names)
+        team_y = random.choice(teams_names)
+        while team_x == team_y:
+            team_y = random.choice(teams_names)
+
+        stad_name = random.choice(stads_names)
+
+        
         my_dict = {
                     'match_id':m_id,
                     'referee':fake.profile()['name'],
                     'date_time':fake.date_time().strftime('%Y-%m-%dT%H:%M:%S.%f'),
                     'teams':{
-                        'home':fake.profile()['company'],
-                        'away':fake.profile()['company']
+                        'home':team_x,
+                        'away':team_y
                     },
                     'stadium':{
-                        'name':fake.city(),
-                        'width':randint(2, 15),
-                        'height':randint(2, 15)
+                        'name':stad_name,
+                        'width':stad_x_y[stad_name][0],
+                        'height':stad_x_y[stad_name][1]
                     },
                     'line_men':{
                         'first':fake.profile()['name'],
@@ -111,6 +150,39 @@ with open("match.json", "w") as write_file:
         data_y.append(my_dict)
     json.dump(data_y, write_file)
 
+
+data = []
+with open("team.json", "w") as write_file:
+    for i in range(1000):
+        if i % 100 == 0: 
+            print (f"Team:  Iteration: {i}")
+            team_id = random.choice(teams_ids)
+            teams_ids.remove(team_id)
+            team_name = random.choice(teams_names)
+            teams_names.remove(team_name)
+
+            my_dict={
+                '_id':team_id,
+                'team_name':team_name
+            }
+
+
+data = []
+with open("stadium.json", "w") as write_file:
+    for i in range(100):
+        if i % 10 == 0: 
+            print (f"stadium:  Iteration: {i}")
+            stad_id = random.choice(stads_ids)
+            stads_ids.remove(stad_id)
+            stads_name = random.choice(stads_names)
+            stads_names.remove(stads_name)
+
+            my_dict={
+                '_id':stad_id,
+                'stad_name':stads_name,
+                'width':stad_x_y[stads_name][0],
+                'height':stad_x_y[stads_name][1]
+            }
 
     
         
