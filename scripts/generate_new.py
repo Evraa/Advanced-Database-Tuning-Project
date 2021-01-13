@@ -59,7 +59,7 @@ with open("users.json", "w") as write_file:
         if i % 1000 == 0: print (f"user:  Iteration: {i}")
         ev = random.randint(0, 2)
 
-        role = 'manage' if (ev==0 or i==0) else 'fan'
+        role = 'manager' if (ev==0 or i==0) else 'fan'
 
         #unique
         username = fake.profile()['name']
@@ -75,7 +75,7 @@ with open("users.json", "w") as write_file:
         
         ev = randint(0, 10)
         reserve_info = {}
-        if role == 'manage':
+        if role == 'manager':
             managers.append(user_id)
         else:
             fans.append(user_id)
