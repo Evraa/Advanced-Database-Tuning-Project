@@ -118,7 +118,6 @@ with open("matches.json", "w") as write_file:
 
         stad_name = random.choice(stads_names)
 
-        user_reserved = {}
         width, height = stad_x_y[stad_name]
         k = 0
         users_picked = []
@@ -130,8 +129,7 @@ with open("matches.json", "w") as write_file:
                     fan = random.choice(fans)
                     while fan in users_picked:
                         fan = random.choice(fans)
-                    users_picked.append(fan)
-                    user_reserved['user_'+str(k)] = {'user_id':fan, 'x_i':ii, 'y_i':jj}
+                    users_picked.append({'user_id':fan, 'x_i':ii, 'y_i':jj})
                     k += 1
 
         
@@ -153,7 +151,7 @@ with open("matches.json", "w") as write_file:
                         'second':fake.profile()['name']
                     },
                     'manager_scheduled':manager_user,
-                    'users_reserved':user_reserved
+                    'users_reserved':users_picked
                     
                 }
         data_y.append(my_dict)
