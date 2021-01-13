@@ -53,6 +53,7 @@ data = []
 usernames = []
 user_ids = []
 managers = []
+fans = []
 with open("users.json", "w") as write_file:
     for i in range(itrs):
         if i % 1000 == 0: print (f"user:  Iteration: {i}")
@@ -74,13 +75,11 @@ with open("users.json", "w") as write_file:
         
         ev = randint(0, 10)
         reserve_info = {}
-        if role == 'fan':
-            for l in range (ev):
-                match_id = random.choice(match_ids)
-                reserve_info['reserve_info_'+str(l)] = {'x_i':randint(0,ev*ev),'y_i':randint(0,ev*ev),'match_id':match_id}
-        else:
-            #manage
+        if role == 'manage':
             managers.append(user_id)
+        else:
+            fans.append(user_id)
+        
 
         my_dict = {
                     '_id':user_id,
@@ -92,8 +91,7 @@ with open("users.json", "w") as write_file:
                     'lname':fake.last_name(),
                     'bdate':fake.date_time().strftime('%Y-%m-%dT%H:%M:%S.%f'),
                     'gender':fake.profile()['sex'],
-                    'city':fake.city(),
-                    'reservations': reserve_info
+                    'city':fake.city()
                 }
         data.append(my_dict)
     json.dump(data, write_file)
@@ -101,6 +99,7 @@ with open("users.json", "w") as write_file:
 matches_picked = []
 managers_taken = []
 data_y = []
+data = []
 with open("matches.json", "w") as write_file:
     for i in range(itrs):
         if i % 1000 == 0: print (f"Match:  Iteration: {i}")
@@ -108,16 +107,6 @@ with open("matches.json", "w") as write_file:
         m_id = random.choice(match_ids)
         match_ids.remove(m_id)
 
-        #pick users reservations
-        users_ids = []
-        j = 0
-        for dic in data:
-            if dic['role'] == 'fan':
-                for recv in dic['reservations']:
-                    if m_id == dic['reservations'][recv]['match_id'] and dic['username'] not in users_ids:
-                        users_ids.append(dic['_id'])
-
-        data = []
         #pick one random manager
         manager_user = random.choice(managers)
 
@@ -128,6 +117,22 @@ with open("matches.json", "w") as write_file:
             team_y = random.choice(teams_names)
 
         stad_name = random.choice(stads_names)
+
+        user_reserved = {}
+        width, height = stad_x_y[stad_name]
+        k = 0
+        users_picked = []
+        for ii in range (width):
+            for jj in range (height):
+                ev = randint(0,2)
+                if ev == 1 and len (users_picked) != len(fans):
+                    #assign
+                    fan = random.choice(fans)
+                    while fan in users_picked:
+                        fan = random.choice(fans)
+                    users_picked.append(fan)
+                    user_reserved['user_'+str(k)] = {'user_id':fan, 'x_i':ii, 'y_i':jj}
+                    k += 1
 
         
         my_dict = {
@@ -148,7 +153,8 @@ with open("matches.json", "w") as write_file:
                         'second':fake.profile()['name']
                     },
                     'manager_scheduled':manager_user,
-                    'users_reserved':users_ids
+                    'users_reserved':user_reserved
+                    
                 }
         data_y.append(my_dict)
     json.dump(data_y, write_file)
