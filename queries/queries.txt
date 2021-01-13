@@ -1,0 +1,35 @@
+1- Given a matchid get set of free seats in the stadium.
+
+index_x         index_y
+
+2- Get set of attendence of matches in specific day.
+
+fname           lname           index_x         index_y         team_home       team_away       stad_name
+
+3- For a user get history of all his matches
+
+index_x         index_y         team_home       team_away       stad_name       date_time
+
+4- Set of Matches for specific team.
+
+team_home       team_away       refree          audience_count  stad_name       date_time
+
+5- Avg/Max/Min/Totalcount audience for each team in his home matches.
+
+team_name       Avg             Max             Min             Totalcount
+
+6- History of reservations for specific stadium.
+
+fname           lname           index_x         index_y         team_home       team_away       date_time
+
+7- Get all audience of a specific team that are less than 30 years.
+
+fname           lname           countOfMatches
+
+8- Get all audience of a specific team that are females.
+
+fname           lname           countOfMatches
+
+9- For every user get number of stadiums he visited.
+
+fname           lname           countOfStadiums
