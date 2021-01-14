@@ -85,31 +85,23 @@ def q_3_fan(user_obj, match_obj, user_id=ObjectId('5ca3958688a8c7d732c0526f')):
 
 def q_3_man(user_obj, match_obj, user_id=ObjectId('b4981db546aff323e9e0678f')):
     
-    pipeline = [{
-        '$lookup':{
-            'from':'matches',
-            'localField':'_id',
-            'foreignField':'manager_scheduled',
-            'as':'matches'
-        }
-    }]
+    #get managers
+    man_ids = user_obj.find({'role':'manager'},{'_id':1, 'username':1})
     results = []
-    i = 0
-    for doc in user_obj.aggregate(pipeline):
-        if i%1000 == 0: print (f'Query 3_2 is running, be patient...\titr:{i}')
-        i += 1
-        for match in doc['matches']:
+    for i,man in enumerate(man_ids):
+        if i%1000==0:print (f'Processing Q:3_2, \tManager:{i}')
+        matches_managed = match_obj.find({'manager_scheduled':man['_id']}, 
+                                        {'_id':0,'teams':1,'stadium':1,'date_time':1})
+        for match in matches_managed:
             result = [
-                doc['username'],
-                match['date_time'],
+                man['username'],
                 match['teams']['home'],
                 match['teams']['away'],
                 match['stadium']['name'],
-                match['referee'],
-                match['line_men']['first'],
-                match['line_men']['second']
+                match['date_time'] 
             ]
             results.append(result)
+    
     
     print (len(results))
 
@@ -147,9 +139,9 @@ if __name__ == "__main__":
     
     # q_1(matches)
     # q_2(users,matches)
-    # q_3_man(users, matches)
+    q_3_man(users, matches)
+    # q_4(teams, matches)
 
-    q_4(teams, matches)
     # first_five = users.find().limit(50)
     # for f in first_five:
     #     print (f['_id'], f['role'])
