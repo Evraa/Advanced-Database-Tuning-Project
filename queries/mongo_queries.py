@@ -80,11 +80,30 @@ def q_3_fan(user_obj, match_obj, user_id=ObjectId('5ca3958688a8c7d732c0526f')):
     '''
     3- For a user get history of all his matches // ATTENDED
     '''
-    pass
+
+    results = []
+    matches_attended = match_obj.find({'users_reserved.user_id':user_id}, 
+                                    {'_id':0,'teams':1,'stadium':1,'date_time':1,'users_reserved':1})
+    for match in matches_attended:
+        for rcv in match['users_reserved']:
+            if rcv['user_id'] == user_id:
+                result = [
+                    rcv['x_i'],
+                    rcv['y_i'],
+                    match['teams']['home'],
+                    match['teams']['away'],
+                    match['stadium']['name'],
+                    match['date_time']
+                ]
+                results.append(result)
+    return results
+
 
 
 def q_3_man(user_obj, match_obj, user_id=ObjectId('b4981db546aff323e9e0678f')):
-    
+    '''
+        3_2: list all managers with their matches scheduled info.
+    '''
     #get managers
     man_ids = user_obj.find({'role':'manager'},{'_id':1, 'username':1})
     results = []
@@ -135,11 +154,12 @@ def q_4(team_obj, match_obj, team_id=ObjectId('2f884164f21ba9602d8263db')):
 if __name__ == "__main__":
     mydb, myclient = create_client("adv_db_prj")
     users, matches, stadiums, teams = mydb['users'], mydb['matches'],mydb['stadiums'],mydb['teams']
-    # view_one_doc([teams])
+    # view_one_doc([matches])
     
     # q_1(matches)
     # q_2(users,matches)
-    q_3_man(users, matches)
+    q_3_fan(users,matches)
+    # q_3_man(users, matches)
     # q_4(teams, matches)
 
     # first_five = users.find().limit(50)
