@@ -74,17 +74,84 @@ def q_2(user_obj,match_obj,date='1981-07-02T07:57:33.000000'):
                     match_doc['stadium']['name']
             ]
             results.append(result)
-    print (results)
+    return (results)
+
+def q_3_fan(user_obj, match_obj, user_id=ObjectId('5ca3958688a8c7d732c0526f')):
+    '''
+    3- For a user get history of all his matches // ATTENDED
+    '''
+    pass
+
+
+def q_3_man(user_obj, match_obj, user_id=ObjectId('b4981db546aff323e9e0678f')):
+    
+    pipeline = [{
+        '$lookup':{
+            'from':'matches',
+            'localField':'_id',
+            'foreignField':'manager_scheduled',
+            'as':'matches'
+        }
+    }]
+    results = []
+    i = 0
+    for doc in user_obj.aggregate(pipeline):
+        if i%1000 == 0: print (f'Query 3_2 is running, be patient...\titr:{i}')
+        i += 1
+        for match in doc['matches']:
+            result = [
+                doc['username'],
+                match['date_time'],
+                match['teams']['home'],
+                match['teams']['away'],
+                match['stadium']['name'],
+                match['referee'],
+                match['line_men']['first'],
+                match['line_men']['second']
+            ]
+            results.append(result)
+    
+    print (len(results))
+
+def q_4(team_obj, match_obj, team_id=ObjectId('2f884164f21ba9602d8263db')):
+    '''
+    4- Set of Matches for specific team.
+    '''
+    
+    #get team name
+    team_name = team_obj.find_one({'_id':team_id})
+    #get matches
+    matches = match_obj.find({
+        '$or':[
+            {'teams.home':team_name['team_name']},
+            {'teams.away':team_name['team_name']}
+        ]
+        })
+    results = []
+    for match in matches:
+        result = [
+            match['teams']['home'],
+            match['teams']['away'],
+            match['referee'],
+            len(match['users_reserved']),
+            match['stadium']['name'],
+            match['date_time']            
+        ]
+        results.append(result)
+    return results
 
 if __name__ == "__main__":
     mydb, myclient = create_client("adv_db_prj")
     users, matches, stadiums, teams = mydb['users'], mydb['matches'],mydb['stadiums'],mydb['teams']
-    # view_one_doc([users])
-    #Q_1
-    # q_1(matches)
-    #Q_2
-    q_2(users,matches)
+    # view_one_doc([teams])
     
+    # q_1(matches)
+    # q_2(users,matches)
+    # q_3_man(users, matches)
 
+    q_4(teams, matches)
+    # first_five = users.find().limit(50)
+    # for f in first_five:
+    #     print (f['_id'], f['role'])
     #when finished
     myclient.close()

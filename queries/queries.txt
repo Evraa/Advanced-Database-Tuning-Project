@@ -10,6 +10,10 @@ fname           lname           index_x         index_y         team_home       
 
 index_x         index_y         team_home       team_away       stad_name       date_time
 
+3_2 - For each manager get history of scheduled matches
+
+username        team_home       tean_away       stad_name       date_time
+
 4- Set of Matches for specific team.
 
 team_home       team_away       refree          audience_count  stad_name       date_time
