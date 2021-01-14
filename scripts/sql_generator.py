@@ -118,8 +118,8 @@ with open("reservations.csv", "w") as write_file:
         
         match_id = randint(1, MATCHES_NUM)
         fan = random.choice(fans)
-        x = randint(0, stad_x_y[match_stadium[i]-1][0])
-        y = randint(0, stad_x_y[match_stadium[i]-1][1])
+        x = randint(0, stad_x_y[match_stadium[match_id-1]-1][0])
+        y = randint(0, stad_x_y[match_stadium[match_id-1]-1][1])
 
         data = [
             x,
