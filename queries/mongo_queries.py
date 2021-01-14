@@ -114,29 +114,35 @@ def q_3_fan(user_obj, match_obj, user_id=ObjectId('5ca3958688a8c7d732c0526f')):
 
 
 
-def q_3_man(user_obj, match_obj, user_id=ObjectId('b4981db546aff323e9e0678f')):
+def q_3_man(user_obj, match_obj, user_id=ObjectId('e536d09303e53afe634eb0b4')):
     '''
         3_2: list all managers with their matches scheduled info.
     '''
     #get managers
-    man_ids = user_obj.find({'role':'manager'},{'_id':1, 'username':1})
-    results = []
-    for i,man in enumerate(man_ids):
-        if i%1000==0:print (f'Processing Q:3_2, \tManager:{i}')
-        matches_managed = match_obj.find({'manager_scheduled':man['_id']}, 
-                                        {'_id':0,'teams':1,'stadium':1,'date_time':1})
-        for match in matches_managed:
-            result = [
-                man['username'],
-                match['teams']['home'],
-                match['teams']['away'],
-                match['stadium']['name'],
-                match['date_time'] 
-            ]
-            results.append(result)
-    
-    
-    print (len(results))
+
+    pipeline = [
+        {'$match': {'_id':user_id}},
+        
+        {'$project': {'_id':1, 'username':1,'role':1}},
+
+        {'$lookup':{
+            'from':'matches',
+            'localField':'_id',
+            'foreignField':'manager_scheduled',
+            'as':'matches_info'
+        }},
+
+        {'$project': { 'username':1, 'matches_info.teams':1, 'matches_info.date_time':1,
+                        'matches_info.stadium':1, 
+        }},
+    ]
+
+
+    user_docs = user_obj.aggregate(pipeline)
+
+    for user_doc in user_docs:
+        pprint.pprint(user_doc)
+
 
 def q_4(team_obj, match_obj, team_id=ObjectId('2f884164f21ba9602d8263db')):
     '''
@@ -243,16 +249,18 @@ if __name__ == "__main__":
     
     # q_1(matches)
     # q_2(users,matches)
-    q_3_fan(users,matches)
-    # q_3_man(users, matches)
+    # q_3_fan(users,matches)
+    q_3_man(users, matches)
     # q_4(teams, matches)
     # q_5(teams, matches)
     # q_6(stadiums, users, matches)
     # q_8(teams, matches, users)
 
 
-    # first_five = stadiums.find().limit(50)
+    # first_five = users.find().limit(50)
     # for f in first_five:
-    #     print (f['_id'], f['stad_name'])
-    #when finished
+    #     print (f['_id'], f['role'])
+
+
+    # when finished
     myclient.close()
