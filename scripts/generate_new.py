@@ -2,42 +2,12 @@ import json
 from faker import Faker
 import random
 from random import randint
-import datetime
 
 
-
-itrs = 5*10000
+itrs = 100000
 TEAMS_NUM = 1000
 STADIUMS_NUM = 100
 fake = Faker('en_US')
-
-#unique match ids
-match_ids = []
-for i in range (itrs):
-    match_id = {"$oid": fake.hexify('^^^^^^^^^^^^^^^^^^^^^^^^')}
-    match_ids.append(match_id)
-
-#unique teams
-teams_names = []
-teams_ids = []
-for i in range (TEAMS_NUM):
-    team = fake.profile()['company']
-    teams_names.append(team)
-
-    team_id = {"$oid": fake.hexify('^^^^^^^^^^^^^^^^^^^^^^^^')}
-    teams_ids.append(team_id)
-
-#unique stads
-stads_names = []
-stads_ids = []
-stad_x_y = {}
-for i in range (STADIUMS_NUM):
-    stad = fake.city()
-    stads_names.append(stad)
-    stad_x_y[stad] = [randint(2,15),randint(2,15)]
-
-    stads_id = {"$oid": fake.hexify('^^^^^^^^^^^^^^^^^^^^^^^^')}
-    stads_ids.append(stads_id)
 
 data = []
 usernames = []
@@ -82,6 +52,35 @@ with open("users.json", "w") as write_file:
         data.append(my_dict)
     json.dump(data, write_file)
 
+
+#unique match ids
+match_ids = []
+for i in range (itrs):
+    match_id = {"$oid": fake.hexify('^^^^^^^^^^^^^^^^^^^^^^^^')}
+    match_ids.append(match_id)
+
+#unique teams
+teams_names = []
+teams_ids = []
+for i in range (TEAMS_NUM):
+    team = fake.profile()['company']
+    teams_names.append(team)
+
+    team_id = {"$oid": fake.hexify('^^^^^^^^^^^^^^^^^^^^^^^^')}
+    teams_ids.append(team_id)
+
+#unique stads
+stads_names = []
+stads_ids = []
+stad_x_y = []
+for i in range (STADIUMS_NUM):
+    stad = fake.city()
+    stads_names.append(stad)
+    stad_x_y.append([randint(2,15),randint(2,15)])
+
+    stads_id = {"$oid": fake.hexify('^^^^^^^^^^^^^^^^^^^^^^^^')}
+    stads_ids.append(stads_id)
+
 matches_picked = []
 managers_taken = []
 data_y = []
@@ -89,9 +88,8 @@ data = []
 with open("matches.json", "w") as write_file:
     for i in range(itrs):
         if i % 1000 == 0: print (f"Match:  Iteration: {i}")
-        #pick random match id
-        m_id = random.choice(match_ids)
-        match_ids.remove(m_id)
+
+        m_id = match_ids[i]
 
         #pick one random manager
         manager_user = random.choice(managers)
@@ -102,9 +100,10 @@ with open("matches.json", "w") as write_file:
         while team_x == team_y:
             team_y = random.choice(teams_names)
 
-        stad_name = random.choice(stads_names)
+        stad_i = randint(0, len(stads_ids)-1)
+        stad_name = stads_names[stad_i]
 
-        width, height = stad_x_y[stad_name]
+        width, height = stad_x_y[stad_i]
         k = 0
         users_picked = []
         for ii in range (width):
@@ -127,8 +126,8 @@ with open("matches.json", "w") as write_file:
                     },
                     'stadium':{
                         'name':stad_name,
-                        'width':stad_x_y[stad_name][0],
-                        'height':stad_x_y[stad_name][1]
+                        'width':stad_x_y[stad_i][0],
+                        'height':stad_x_y[stad_i][1]
                     },
                     'line_men':{
                         'first':fake.profile()['name'],
@@ -147,10 +146,8 @@ with open("teams.json", "w") as write_file:
     for i in range(TEAMS_NUM):
         if i % 100 == 0: 
             print (f"Team:  Iteration: {i}")
-        team_id = random.choice(teams_ids)
-        teams_ids.remove(team_id)
-        team_name = random.choice(teams_names)
-        teams_names.remove(team_name)
+        team_id = teams_ids[i]
+        team_name = teams_names[i]
 
         my_dict={
             '_id':team_id,
@@ -166,16 +163,14 @@ with open("stadiums.json", "w") as write_file:
     for i in range(STADIUMS_NUM):
         if i % 10 == 0: 
             print (f"stadium:  Iteration: {i}")
-        stad_id = random.choice(stads_ids)
-        stads_ids.remove(stad_id)
-        stads_name = random.choice(stads_names)
-        stads_names.remove(stads_name)
+        stad_id = stads_ids[i]
+        stads_name = stads_names[i]
 
         my_dict={
             '_id':stad_id,
             'stad_name':stads_name,
-            'width':stad_x_y[stads_name][0],
-            'height':stad_x_y[stads_name][1]
+            'width':stad_x_y[i][0],
+            'height':stad_x_y[i][1]
         }
         data.append(my_dict)
     json.dump(data, write_file)
