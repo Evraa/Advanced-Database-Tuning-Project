@@ -48,15 +48,43 @@ def q_1(match_obj,match_id=ObjectId('84eb185ed16d7a6b818d2389')):
 
     return results
 
+def q_2(user_obj,match_obj,date='1981-07-02T07:57:33.000000'):
+    '''
+        2- Get set of attendence of matches in specific day.
+        Note: faker is so good, that each match is played at exactly one day!
+        but the code is fine to be applcable with multiple matches within the same day.
+    '''
+
+    #first get matches played at that day
+    match_docs = match_obj.find({'date_time':date})
+    results = []
+    for match_doc in match_docs:
+        reservations = match_doc['users_reserved']
+        for reservation in reservations:
+            #fetch user
+            user_id = reservation['user_id']
+            user_doc = user_obj.find_one({'_id':user_id})
+            result = [
+                    user_doc['fname'],
+                    user_doc['lname'],
+                    reservation['x_i'],
+                    reservation['y_i'],
+                    match_doc['teams']['home'], 
+                    match_doc['teams']['away'],
+                    match_doc['stadium']['name']
+            ]
+            results.append(result)
+    print (results)
 
 if __name__ == "__main__":
     mydb, myclient = create_client("adv_db_prj")
     users, matches, stadiums, teams = mydb['users'], mydb['matches'],mydb['stadiums'],mydb['teams']
-    # view_one_doc([matches])
+    # view_one_doc([users])
     #Q_1
+    # q_1(matches)
+    #Q_2
+    q_2(users,matches)
     
-    q_1(matches)
-
 
     #when finished
     myclient.close()
