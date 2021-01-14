@@ -33,11 +33,7 @@ CREATE TABLE matches (
 	stadium_id           int  NOT NULL    ,
 	home_team            int  NOT NULL    ,
 	away_team            int  NOT NULL    ,
-	manager_scheduled    varchar(50)  NOT NULL    ,
-	CONSTRAINT fk_matches_stadiums FOREIGN KEY ( stadium_id ) REFERENCES stadiums( id ) ON DELETE RESTRICT ON UPDATE RESTRICT,
-	CONSTRAINT fk_matches_teams FOREIGN KEY ( away_team ) REFERENCES teams( id ) ON DELETE RESTRICT ON UPDATE RESTRICT,
-	CONSTRAINT fk_matches_teams_0 FOREIGN KEY ( home_team ) REFERENCES teams( id ) ON DELETE RESTRICT ON UPDATE RESTRICT,
-	CONSTRAINT fk_matches_users FOREIGN KEY ( manager_scheduled ) REFERENCES users( username ) ON DELETE RESTRICT ON UPDATE RESTRICT
+	manager_scheduled    varchar(50)  NOT NULL    
  );
 
 CREATE INDEX fk_matches_stadiums ON matches ( stadium_id );
@@ -49,14 +45,25 @@ CREATE INDEX fk_matches_teams_0 ON matches ( home_team );
 CREATE INDEX fk_matches_users ON matches ( manager_scheduled );
 
 CREATE TABLE reservations ( 
+	match_id             int  NOT NULL    ,
+	username             varchar(100)  NOT NULL    ,
 	x                    int  NOT NULL    ,
 	y                    int  NOT NULL    ,
-	username             varchar(100)  NOT NULL    ,
-	match_id             int  NOT NULL    ,
-	CONSTRAINT fk_reservations_matches FOREIGN KEY ( match_id ) REFERENCES matches( id ) ON DELETE RESTRICT ON UPDATE RESTRICT,
-	CONSTRAINT fk_reservations_users FOREIGN KEY ( username ) REFERENCES users( username ) ON DELETE RESTRICT ON UPDATE RESTRICT
+	CONSTRAINT pk_reservations PRIMARY KEY ( match_id, username )
  );
 
 CREATE INDEX fk_reservations_matches ON reservations ( match_id );
 
 CREATE INDEX fk_reservations_users ON reservations ( username );
+
+ALTER TABLE matches ADD CONSTRAINT fk_matches_stadiums FOREIGN KEY ( stadium_id ) REFERENCES stadiums( id ) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE matches ADD CONSTRAINT fk_matches_teams FOREIGN KEY ( away_team ) REFERENCES teams( id ) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE matches ADD CONSTRAINT fk_matches_teams_0 FOREIGN KEY ( home_team ) REFERENCES teams( id ) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE matches ADD CONSTRAINT fk_matches_users FOREIGN KEY ( manager_scheduled ) REFERENCES users( username ) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE reservations ADD CONSTRAINT fk_reservations_matches FOREIGN KEY ( match_id ) REFERENCES matches( id ) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE reservations ADD CONSTRAINT fk_reservations_users FOREIGN KEY ( username ) REFERENCES users( username ) ON DELETE RESTRICT ON UPDATE RESTRICT;

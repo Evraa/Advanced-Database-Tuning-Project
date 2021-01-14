@@ -10,7 +10,6 @@ STADIUMS_NUM = 100
 fake = Faker('en_US')
 
 data = []
-usernames = []
 user_ids = []
 managers = []
 fans = []
@@ -23,7 +22,6 @@ with open("users.json", "w") as write_file:
 
         #unique
         username = fake.profile()['name']
-        usernames.append(username)
 
         #unique
         user_id = {"$oid": fake.hexify('^^^^^^^^^^^^^^^^^^^^^^^^')}
