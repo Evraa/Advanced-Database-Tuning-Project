@@ -157,19 +157,28 @@ def q_4(team_obj, match_obj, team_id=ObjectId('2f884164f21ba9602d8263db')):
             {'teams.home':team_name['team_name']},
             {'teams.away':team_name['team_name']}
         ]
+        },{
+            '_id':0, 'team_home':'$teams.home','team_away':'$teams.away', 'referee':1,
+            'stad_name':'$stadium.name', 'date_time':1,
+            'audience_count': { '$cond': { 'if': { '$isArray': "$users_reserved" }, 
+            'then': { '$size': "$users_reserved" }, 'else': "NA"}}
         })
-    results = []
+
     for match in matches:
-        result = [
-            match['teams']['home'],
-            match['teams']['away'],
-            match['referee'],
-            len(match['users_reserved']),
-            match['stadium']['name'],
-            match['date_time']            
-        ]
-        results.append(result)
-    return results
+        input("e")
+        pprint.pprint(match)
+    # results = []
+    # for match in matches:
+    #     result = [
+    #         match['teams']['home'],
+    #         match['teams']['away'],
+    #         match['referee'],
+    #         len(match['users_reserved']),
+    #         match['stadium']['name'],
+    #         match['date_time']            
+    #     ]
+    #     results.append(result)
+    # return results
 
 def q_5(team_obj, match_obj, team_id=ObjectId('2f884164f21ba9602d8263db')):
     #get team name
@@ -250,8 +259,8 @@ if __name__ == "__main__":
     # q_1(matches)
     # q_2(users,matches)
     # q_3_fan(users,matches)
-    q_3_man(users, matches)
-    # q_4(teams, matches)
+    # q_3_man(users, matches)
+    q_4(teams, matches)
     # q_5(teams, matches)
     # q_6(stadiums, users, matches)
     # q_8(teams, matches, users)
