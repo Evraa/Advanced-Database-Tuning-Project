@@ -51,26 +51,32 @@ def q_2(user_obj,match_obj,date='1981-07-02T07:57:33.000000'):
         but the code is fine to be applcable with multiple matches within the same day.
     '''
 
-    #first get matches played at that day
-    match_docs = match_obj.find({'date_time':date})
-    results = []
+    pipeline = [
+        {'$match': {'date_time':date}},
+        
+        {'$project': {'_id':0,'indexes':'$users_reserved',
+                        'team_home':'$teams.home','team_away':'$teams.away',
+                        'stad_name':'$stadium.name',}},
+        {'$unwind':"$indexes"},
+
+        {'$lookup':{
+            'from':'users',
+            'localField':'indexes.user_id',
+            'foreignField':'_id',
+            'as':'users_info'
+        }},
+
+        {'$project': { 'index_x': '$indexes.x_i','index_y': '$indexes.y_i',
+                        'team_home':1,'team_away':1,
+                        'stad_name':1,'fname':'$users_info.fname','lname':'$users_info.lname'
+        }},
+                    
+    ]
+    match_docs = match_obj.aggregate(pipeline)
+
     for match_doc in match_docs:
-        reservations = match_doc['users_reserved']
-        for reservation in reservations:
-            #fetch user
-            user_id = reservation['user_id']
-            user_doc = user_obj.find_one({'_id':user_id})
-            result = [
-                    user_doc['fname'],
-                    user_doc['lname'],
-                    reservation['x_i'],
-                    reservation['y_i'],
-                    match_doc['teams']['home'], 
-                    match_doc['teams']['away'],
-                    match_doc['stadium']['name']
-            ]
-            results.append(result)
-    return (results)
+        pprint.pprint(match_doc)
+
 
 def q_3_fan(user_obj, match_obj, user_id=ObjectId('5ca3958688a8c7d732c0526f')):
     '''
@@ -223,8 +229,8 @@ if __name__ == "__main__":
     users, matches, stadiums, teams = mydb['users'], mydb['matches'],mydb['stadiums'],mydb['teams']
     # view_one_doc([matches])
     
-    q_1(matches)
-    # q_2(users,matches)
+    # q_1(matches)
+    q_2(users,matches)
     # q_3_fan(users,matches)
     # q_3_man(users, matches)
     # q_4(teams, matches)
