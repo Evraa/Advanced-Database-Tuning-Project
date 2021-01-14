@@ -151,6 +151,18 @@ def q_4(team_obj, match_obj, team_id=ObjectId('2f884164f21ba9602d8263db')):
         results.append(result)
     return results
 
+def q_5(team_obj, match_obj, team_id=ObjectId('2f884164f21ba9602d8263db')):
+    #get team name
+    team_name = team_obj.find_one({'_id':team_id})
+    #get matches
+    matches = match_obj.find({'teams.home':team_name['team_name']}, {'users_reserved':1})
+    results = []
+    for match in matches:
+        results.append(len(match['users_reserved']))
+    
+    stat= (min(results),max(results),sum(results)/len(results),sum(results))
+    return (stat)
+    
 if __name__ == "__main__":
     mydb, myclient = create_client("adv_db_prj")
     users, matches, stadiums, teams = mydb['users'], mydb['matches'],mydb['stadiums'],mydb['teams']
@@ -158,10 +170,10 @@ if __name__ == "__main__":
     
     # q_1(matches)
     # q_2(users,matches)
-    q_3_fan(users,matches)
+    # q_3_fan(users,matches)
     # q_3_man(users, matches)
     # q_4(teams, matches)
-
+    q_5(teams, matches)
     # first_five = users.find().limit(50)
     # for f in first_five:
     #     print (f['_id'], f['role'])

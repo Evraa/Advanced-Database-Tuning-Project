@@ -6,7 +6,7 @@ index_x         index_y
 
 fname           lname           index_x         index_y         team_home       team_away       stad_name
 
-3- For a user get history of all his matches
+3- For a user get history of all his matches attended
 
 index_x         index_y         team_home       team_away       stad_name       date_time
 
