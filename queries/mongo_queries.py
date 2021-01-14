@@ -149,36 +149,23 @@ def q_4(team_obj, match_obj, team_id=ObjectId('2f884164f21ba9602d8263db')):
     4- Set of Matches for specific team.
     '''
     
-    #get team name
-    team_name = team_obj.find_one({'_id':team_id})
     #get matches
     matches = match_obj.find({
         '$or':[
-            {'teams.home':team_name['team_name']},
-            {'teams.away':team_name['team_name']}
+            {'teams.home':team_obj.find_one({'_id':team_id})['team_name']},
+            {'teams.away':team_obj.find_one({'_id':team_id})['team_name']}
         ]
         },{
             '_id':0, 'team_home':'$teams.home','team_away':'$teams.away', 'referee':1,
             'stad_name':'$stadium.name', 'date_time':1,
+
             'audience_count': { '$cond': { 'if': { '$isArray': "$users_reserved" }, 
             'then': { '$size': "$users_reserved" }, 'else': "NA"}}
         })
 
     for match in matches:
-        input("e")
         pprint.pprint(match)
-    # results = []
-    # for match in matches:
-    #     result = [
-    #         match['teams']['home'],
-    #         match['teams']['away'],
-    #         match['referee'],
-    #         len(match['users_reserved']),
-    #         match['stadium']['name'],
-    #         match['date_time']            
-    #     ]
-    #     results.append(result)
-    # return results
+
 
 def q_5(team_obj, match_obj, team_id=ObjectId('2f884164f21ba9602d8263db')):
     #get team name
@@ -197,6 +184,7 @@ def q_6(stad_obj, user_obj, match_obj, stad_id = ObjectId('1539a9451eb51a34df87c
     '''
     6- History of reservations for specific stadium. //Lake Stephanieberg
     '''
+
     #get stad name
     stad_name = stad_obj.find_one({'_id':stad_id})['stad_name']
     #get matches
