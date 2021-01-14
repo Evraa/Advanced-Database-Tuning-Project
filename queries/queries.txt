@@ -24,7 +24,7 @@ team_name       Avg             Max             Min             Totalcount
 
 6- History of reservations for specific stadium.
 
-fname           lname           index_x         index_y         team_home       team_away       date_time
+stad_name       fname           lname           index_x         index_y         team_home       team_away       date_time
 
 7- Get all audience of a specific team that are less than 30 years.
 

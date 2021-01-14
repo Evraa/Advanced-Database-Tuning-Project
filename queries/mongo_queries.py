@@ -154,6 +154,7 @@ def q_4(team_obj, match_obj, team_id=ObjectId('2f884164f21ba9602d8263db')):
 def q_5(team_obj, match_obj, team_id=ObjectId('2f884164f21ba9602d8263db')):
     #get team name
     team_name = team_obj.find_one({'_id':team_id})
+    
     #get matches
     matches = match_obj.find({'teams.home':team_name['team_name']}, {'users_reserved':1})
     results = []
@@ -162,20 +163,56 @@ def q_5(team_obj, match_obj, team_id=ObjectId('2f884164f21ba9602d8263db')):
     
     stat= (min(results),max(results),sum(results)/len(results),sum(results))
     return (stat)
-    
+
+def q_6(stad_obj, user_obj, match_obj, stad_id = ObjectId('1539a9451eb51a34df87c3bc')):
+    '''
+    6- History of reservations for specific stadium. //Lake Stephanieberg
+
+    fname           lname           index_x         index_y         team_home       team_away       date_time
+
+    '''
+    #get stad name
+    stad_name = stad_obj.find_one({'_id':stad_id})['stad_name']
+    #get matches
+    matches = match_obj.find({'stadium.name':stad_name}, {'teams':1,'date_time':1,'users_reserved':1})
+    results = []
+    for match in matches:
+        reservations = match['users_reserved']
+        for reservation in reservations:
+            user_id = reservation['user_id']
+            x_i = reservation['x_i']
+            y_i = reservation['y_i']
+
+            user = user_obj.find_one({'_id':user_id},{'fname':1,'lname':1})
+            result = [
+                stad_name,
+                user['fname'],
+                user['lname'],
+                x_i, y_i,
+                match['teams']['home'],
+                match['teams']['away'],
+                match['date_time']
+            ]
+            results.append(result)
+    # print (len(results))
+    return results
+
+
 if __name__ == "__main__":
     mydb, myclient = create_client("adv_db_prj")
     users, matches, stadiums, teams = mydb['users'], mydb['matches'],mydb['stadiums'],mydb['teams']
-    # view_one_doc([matches])
+    # view_one_doc([stadiums])
     
     # q_1(matches)
     # q_2(users,matches)
     # q_3_fan(users,matches)
     # q_3_man(users, matches)
     # q_4(teams, matches)
-    q_5(teams, matches)
-    # first_five = users.find().limit(50)
+    # q_5(teams, matches)
+    q_6(stadiums, users, matches)
+
+    # first_five = stadiums.find().limit(50)
     # for f in first_five:
-    #     print (f['_id'], f['role'])
+    #     print (f['_id'], f['stad_name'])
     #when finished
     myclient.close()
