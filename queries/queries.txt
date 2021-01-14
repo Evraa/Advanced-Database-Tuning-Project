@@ -6,7 +6,7 @@ index_x         index_y
 
 fname           lname           index_x         index_y         team_home       team_away       stad_name
 
-3- For a user get history of all his matches attended
+3- For a user get history of all his matches (attended)
 
 index_x         index_y         team_home       team_away       stad_name       date_time
 
@@ -24,7 +24,7 @@ team_name       Avg             Max             Min             Totalcount
 
 6- History of reservations for specific stadium.
 
-stad_name       fname           lname           index_x         index_y         team_home       team_away       date_time
+(stad_name)       fname           lname           index_x         index_y         team_home       team_away       date_time
 
 7- Get all audience of a specific team that are less than 30 years.
 
@@ -32,7 +32,7 @@ fname           lname           countOfMatches
 
 8- Get all audience of a specific team that are females.
 
-fname           lname           countOfMatches
+fname           lname           countOfMatches  
 
 9- For every user get number of stadiums he visited.
 

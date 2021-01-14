@@ -167,9 +167,6 @@ def q_5(team_obj, match_obj, team_id=ObjectId('2f884164f21ba9602d8263db')):
 def q_6(stad_obj, user_obj, match_obj, stad_id = ObjectId('1539a9451eb51a34df87c3bc')):
     '''
     6- History of reservations for specific stadium. //Lake Stephanieberg
-
-    fname           lname           index_x         index_y         team_home       team_away       date_time
-
     '''
     #get stad name
     stad_name = stad_obj.find_one({'_id':stad_id})['stad_name']
@@ -197,11 +194,38 @@ def q_6(stad_obj, user_obj, match_obj, stad_id = ObjectId('1539a9451eb51a34df87c
     # print (len(results))
     return results
 
+def q_8(team_obj, match_obj, user_obj, team_id=ObjectId('2f884164f21ba9602d8263db')):
+    '''
+    8- Get all audience of a specific team that are females. //team: Navarro Inc
+
+    fname           lname           countOfMatches
+    '''
+    #get team name
+    team_name = team_obj.find_one({'_id':team_id},{'team_name':1})
+    #get matches
+    matches = match_obj.find({
+        '$or':[
+            {'teams.home':team_name['team_name']},
+            {'teams.away':team_name['team_name']}
+        ]
+        }, {'users_reserved':1})
+    results = []
+    for match in matches:
+        reservations = match['users_reserved']
+        for reservation in reservations:
+            user_id = reservation['user_id']
+            user = user_obj.find_one({'_id':user_id,'gender':'F'},{'fname':1,'lname':1})
+            if user is not None:
+                result = [user['fname'],user['lname']]
+                results.append(result)
+    print (len(results))
+    return results
+
 
 if __name__ == "__main__":
     mydb, myclient = create_client("adv_db_prj")
     users, matches, stadiums, teams = mydb['users'], mydb['matches'],mydb['stadiums'],mydb['teams']
-    # view_one_doc([stadiums])
+    # view_one_doc([users])
     
     # q_1(matches)
     # q_2(users,matches)
@@ -209,7 +233,9 @@ if __name__ == "__main__":
     # q_3_man(users, matches)
     # q_4(teams, matches)
     # q_5(teams, matches)
-    q_6(stadiums, users, matches)
+    # q_6(stadiums, users, matches)
+    q_8(teams, matches, users)
+
 
     # first_five = stadiums.find().limit(50)
     # for f in first_five:
