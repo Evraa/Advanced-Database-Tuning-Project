@@ -6,7 +6,7 @@ import datetime
 
 
 
-itrs = 1000000
+itrs = 5*10000
 TEAMS_NUM = 1000
 STADIUMS_NUM = 100
 fake = Faker('en_US')
