@@ -83,22 +83,34 @@ def q_3_fan(user_obj, match_obj, user_id=ObjectId('5ca3958688a8c7d732c0526f')):
     3- For a user get history of all his matches // ATTENDED
     '''
 
-    results = []
-    matches_attended = match_obj.find({'users_reserved.user_id':user_id}, 
-                                    {'_id':0,'teams':1,'stadium':1,'date_time':1,'users_reserved':1})
-    for match in matches_attended:
-        for rcv in match['users_reserved']:
-            if rcv['user_id'] == user_id:
-                result = [
-                    rcv['x_i'],
-                    rcv['y_i'],
-                    match['teams']['home'],
-                    match['teams']['away'],
-                    match['stadium']['name'],
-                    match['date_time']
-                ]
-                results.append(result)
-    return results
+    pipeline = [
+        {'$match': {'_id':user_id}},
+        
+        {'$project': {'_id':1}},
+
+        {'$lookup':{
+            'from':'matches',
+            'localField':'_id',
+            'foreignField':'users_reserved.user_id',
+            'as':'matches_info'
+        }},
+
+        {'$project': { 'matches_info.teams':1, 'matches_info.date_time':1,
+                        'matches_info.stadium':1, 
+        }},
+
+        # {'$group':{'_id':'$matches_info.users_reserved.user_id'}}
+        # {'$match':{'matches_info.users_reserved.user_id':user_id}}
+                    
+    ]
+
+
+    user_docs = user_obj.aggregate(pipeline)
+
+    for user_doc in user_docs:
+        pprint.pprint(user_doc)
+
+    #NOTE: Can't get seats for THAT user.
 
 
 
@@ -230,8 +242,8 @@ if __name__ == "__main__":
     # view_one_doc([matches])
     
     # q_1(matches)
-    q_2(users,matches)
-    # q_3_fan(users,matches)
+    # q_2(users,matches)
+    q_3_fan(users,matches)
     # q_3_man(users, matches)
     # q_4(teams, matches)
     # q_5(teams, matches)
