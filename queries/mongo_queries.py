@@ -2,6 +2,7 @@ import pymongo
 import json
 from bson.objectid import ObjectId
 import numpy as np
+import pprint
 
 def create_client(db_name):
     myclient = pymongo.MongoClient("mongodb://localhost:27017/")
@@ -30,23 +31,18 @@ def q_1(match_obj,match_id=ObjectId('84eb185ed16d7a6b818d2389')):
     '''
 
     #first get the match we are taking about
-    #we know it's only one
-    match_doc = match_obj.find_one({'_id':match_id})
-    #get stad x and y [11,7]
-    x,y = match_doc['stadium']['width'],match_doc['stadium']['height']
-    stadium = np.zeros([x,y])
-    #secondly get the user reserved seats to mark them.
-    user_reserved = match_doc['users_reserved']
-    for usr_rsv in user_reserved:
-        y_i,x_i = usr_rsv['y_i'], usr_rsv['x_i']
-        stadium[x_i,y_i] = 1
-    
-    results = []
-    for i in range(x):
-        for j in range(y):
-            if stadium[i,j] == 0: results.append((i,j))
+    pipeline = [
+        {'$match': {'_id':match_id}},
+        {'$project': {'users_reserved.x_i':1,'users_reserved.y_i':1}}
+    ]
 
-    return results
+    match_docs = match_obj.aggregate(pipeline)
+
+    for match_doc in match_docs:
+        pprint.pprint(match_doc)
+
+    #NOTE: Can't get the FREE Seats
+
 
 def q_2(user_obj,match_obj,date='1981-07-02T07:57:33.000000'):
     '''
@@ -225,16 +221,16 @@ def q_8(team_obj, match_obj, user_obj, team_id=ObjectId('2f884164f21ba9602d8263d
 if __name__ == "__main__":
     mydb, myclient = create_client("adv_db_prj")
     users, matches, stadiums, teams = mydb['users'], mydb['matches'],mydb['stadiums'],mydb['teams']
-    # view_one_doc([users])
+    # view_one_doc([matches])
     
-    # q_1(matches)
+    q_1(matches)
     # q_2(users,matches)
     # q_3_fan(users,matches)
     # q_3_man(users, matches)
     # q_4(teams, matches)
     # q_5(teams, matches)
     # q_6(stadiums, users, matches)
-    q_8(teams, matches, users)
+    # q_8(teams, matches, users)
 
 
     # first_five = stadiums.find().limit(50)
