@@ -15,8 +15,6 @@ fake = Faker('en_US')
 match_ids = []
 for i in range (itrs):
     match_id = {"$oid": fake.hexify('^^^^^^^^^^^^^^^^^^^^^^^^')}
-    while match_id in match_ids:
-        match_id = {"$oid": fake.hexify('^^^^^^^^^^^^^^^^^^^^^^^^')}
     match_ids.append(match_id)
 
 #unique teams
@@ -24,13 +22,9 @@ teams_names = []
 teams_ids = []
 for i in range (TEAMS_NUM):
     team = fake.profile()['company']
-    while team in teams_names:
-        team = fake.profile()['company']
     teams_names.append(team)
 
     team_id = {"$oid": fake.hexify('^^^^^^^^^^^^^^^^^^^^^^^^')}
-    while team_id in teams_ids:
-        team_id = {"$oid": fake.hexify('^^^^^^^^^^^^^^^^^^^^^^^^')}
     teams_ids.append(team_id)
 
 #unique stads
@@ -39,14 +33,10 @@ stads_ids = []
 stad_x_y = {}
 for i in range (STADIUMS_NUM):
     stad = fake.city()
-    while stad in stads_names:
-        stad = fake.city()
     stads_names.append(stad)
     stad_x_y[stad] = [randint(2,15),randint(2,15)]
 
     stads_id = {"$oid": fake.hexify('^^^^^^^^^^^^^^^^^^^^^^^^')}
-    while stads_id in stads_ids:
-        stads_id = {"$oid": fake.hexify('^^^^^^^^^^^^^^^^^^^^^^^^')}
     stads_ids.append(stads_id)
 
 data = []
@@ -63,14 +53,10 @@ with open("users.json", "w") as write_file:
 
         #unique
         username = fake.profile()['name']
-        while username in usernames:
-            username = fake.profile()['name']
         usernames.append(username)
 
         #unique
         user_id = {"$oid": fake.hexify('^^^^^^^^^^^^^^^^^^^^^^^^')}
-        while user_id in user_ids:
-            user_id = {"$oid": fake.hexify('^^^^^^^^^^^^^^^^^^^^^^^^')}
         user_ids.append(user_id)
         
         ev = randint(0, 10)
@@ -127,8 +113,6 @@ with open("matches.json", "w") as write_file:
                 if ev == 1 and len (users_picked) != len(fans):
                     #assign
                     fan = random.choice(fans)
-                    while fan in users_picked:
-                        fan = random.choice(fans)
                     users_picked.append({'user_id':fan, 'x_i':ii, 'y_i':jj})
                     k += 1
 
