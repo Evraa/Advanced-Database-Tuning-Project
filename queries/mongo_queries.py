@@ -53,7 +53,7 @@ def q_1(user_obj, match_obj,team_obj,team_id=ObjectId('2f884164f21ba9602d8263db'
         #4- get fans at specific city
         {'$match': {'users_info.city':city}},
         #5- project results
-        {'$project':{'_id':0,'fname':'users_info.fname','lname':'users_info.lname'}}
+        {'$project':{'_id':0,'fname':'$users_info.fname','lname':'$users_info.lname'}}
     ]
 
     match_docs = match_obj.aggregate(pipeline)
@@ -66,38 +66,36 @@ def q_1(user_obj, match_obj,team_obj,team_id=ObjectId('2f884164f21ba9602d8263db'
     print (f'Results Count: {count}')
 
 
-def q_2(user_obj,match_obj,date='1981-07-02T07:57:33.000000'):
+def q_2(user_obj,match_obj,date_l='1999-07-02T07:57:33.000000',date_u='2000-07-02T07:57:33.000000'):
     '''
-        2- Get set of attendence of matches in specific day.
-        Note: faker is so good, that each match is played at exactly one day!
-        but the code is fine to be applcable with multiple matches within the same day.
+        (select users that attended matches in range of date).
     '''
 
     pipeline = [
-        {'$match': {'date_time':date}},
-        
-        {'$project': {'_id':0,'indexes':'$users_reserved',
-                        'team_home':'$teams.home','team_away':'$teams.away',
-                        'stad_name':'$stadium.name',}},
-        {'$unwind':"$indexes"},
+        {'$match': {'date_time': {'$gt':date_l , '$lt': date_u}  }},
+
+        {'$project': {'_id':0, 'users_reserved.user_id':1}},
+
+        {'$unwind':"$users_reserved"},
 
         {'$lookup':{
             'from':'users',
-            'localField':'indexes.user_id',
+            'localField':'users_reserved.user_id',
             'foreignField':'_id',
             'as':'users_info'
         }},
-
-        {'$project': { 'index_x': '$indexes.x_i','index_y': '$indexes.y_i',
-                        'team_home':1,'team_away':1,
-                        'stad_name':1,'fname':'$users_info.fname','lname':'$users_info.lname'
-        }},
+        {'$project':{'_id':0,'fname':'$users_info.fname','lname':'$users_info.lname'}}
+       
                     
     ]
     match_docs = match_obj.aggregate(pipeline)
-
+    print ("Printing Results..")
+    count = 0
     for match_doc in match_docs:
+        
         pprint.pprint(match_doc)
+        count+=1
+    print (f'Results Count: {count}')
 
 
 def q_3(user_obj, match_obj, user_id=ObjectId('5ca3958688a8c7d732c0526f')):
@@ -166,7 +164,7 @@ if __name__ == "__main__":
     users, matches, stadiums, teams = mydb['users'], mydb['matches'],mydb['stadiums'],mydb['teams']
     # view_one_doc([teams])
     
-    q_1(users,matches,teams)
+    # q_1(users,matches,teams)
     # q_2(users,matches)
     # q__3(users,matches)
     # q_4(teams, matches)
@@ -175,6 +173,7 @@ if __name__ == "__main__":
     # first_five = users.find().limit(50)
     # for f in first_five:
         # print (f['_id'], f['city'])
+
 
 
     # when finished
