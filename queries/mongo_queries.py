@@ -98,39 +98,34 @@ def q_2(user_obj,match_obj,date_l='1999-07-02T07:57:33.000000',date_u='2000-07-0
     print (f'Results Count: {count}')
 
 
-def q_3(user_obj, match_obj, user_id=ObjectId('5ca3958688a8c7d732c0526f')):
+def q_3(user_obj, match_obj):
     '''
-    3- For a user get history of all his matches // ATTENDED
+    (select users that attended any match and sit on the first row i.e. y = 1).
     '''
 
     pipeline = [
-        {'$match': {'_id':user_id}},
-        
-        {'$project': {'_id':1}},
+        {'$project': {'_id':0, 'users_reserved.y_i':1, 'users_reserved.user_id':1}},
+        {'$unwind': '$users_reserved'},
+        {'$match': { 'users_reserved.y_i': 1}},
 
         {'$lookup':{
-            'from':'matches',
-            'localField':'_id',
-            'foreignField':'users_reserved.user_id',
-            'as':'matches_info'
+            'from':'users',
+            'localField':'users_reserved.user_id',
+            'foreignField':'_id',
+            'as':'users_info'
         }},
-
-        {'$project': { 'matches_info.teams':1, 'matches_info.date_time':1,
-                        'matches_info.stadium':1, 
-        }},
-
-        # {'$group':{'_id':'$matches_info.users_reserved.user_id'}}
-        # {'$match':{'matches_info.users_reserved.user_id':user_id}}
+        {'$project':{'_id':0,'fname':'$users_info.fname','lname':'$users_info.lname'}}
                     
     ]
 
-
-    user_docs = user_obj.aggregate(pipeline)
-
-    for user_doc in user_docs:
-        pprint.pprint(user_doc)
-
-    #NOTE: Can't get seats for THAT user.
+    match_docs = match_obj.aggregate(pipeline)
+    print ("Printing Results..")
+    count = 0
+    for match_doc in match_docs:
+        
+        pprint.pprint(match_doc)
+        count+=1
+    print (f'Results Count: {count}')
 
 
 
@@ -166,7 +161,7 @@ if __name__ == "__main__":
     
     # q_1(users,matches,teams)
     # q_2(users,matches)
-    # q__3(users,matches)
+    q_3(users,matches)
     # q_4(teams, matches)
     
 
