@@ -14,10 +14,11 @@ fake = Faker('en_US')
 
 #get list of cities
 _cities = []
-city = fake.city()
-while city in _cities:
+for _ in range(CITY_NUM):
     city = fake.city()
-_cities.append(city)
+    while city in _cities:
+        city = fake.city()
+    _cities.append(city)
 
 
 data = []
@@ -94,6 +95,8 @@ for i in range (STADIUMS_NUM):
 _dates = []
 for i in range (DATES_COUNT):
     date = fake.date_time().strftime('%Y-%m-%dT%H:%M:%S.%f')
+    while date in _dates:
+        date = fake.date_time().strftime('%Y-%m-%dT%H:%M:%S.%f')
     _dates.append(date)
 
 
