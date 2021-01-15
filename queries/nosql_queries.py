@@ -174,7 +174,7 @@ if __name__ == "__main__":
     # q_1(users,matches,teams)
     # q_2(users,matches)
     # q_3(users,matches)
-    q_4(users, matches)
+    # q_4(users, matches)
     
 
     # first_five = users.find().limit(50)
