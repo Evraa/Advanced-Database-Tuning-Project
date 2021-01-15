@@ -6,7 +6,7 @@ Optimization Techniques:
     3- Partitioning by hash
         (select users that attended any match and sit on the first row i.e. y = 1).
     4- Multiple Indexing 
-        (select users that attended any match and sit far i.e. x > 20 and y > 50).
+        (select users that attended any match and sit far i.e. x = 20 and y = 50).
     5- Query Optimization
         (we will optimize some/all above queries).
     6- Memory buffer (cashing).
