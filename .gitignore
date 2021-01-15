@@ -2,4 +2,4 @@ scripts/*.json
 scripts/*.csv
 .vscode
 *.json
-data
+data*

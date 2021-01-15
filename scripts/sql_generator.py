@@ -7,8 +7,16 @@ USERS_NUM = 500000
 TEAMS_NUM = 20
 STADIUMS_NUM = 30
 MATCHES_NUM = 400
+DATES_COUNT = 400//2
 RESERVATIONS_NUM = 1000000
 fake = Faker('en_US')
+
+#get list of cities
+_cities = []
+city = fake.city()
+while city in _cities:
+    city = fake.city()
+_cities.append(city)
 
 managers = []
 fans = []
@@ -38,7 +46,7 @@ with open("users.csv", "w") as write_file:
             role,
             fake.date_time().strftime('%Y-%m-%d'),
             fake.profile()['sex'],
-            fake.city()
+            random.choice(city)
         ]
         data = [str(d) for d in data]
         write_file.write(','.join(data))
@@ -77,6 +85,12 @@ with open("stadiums.csv", "w") as write_file:
         write_file.write('\n')
     
 match_stadium = []
+#unique dates but specific
+_dates = []
+for i in range (DATES_COUNT):
+    date = fake.date_time().strftime('%Y-%m-%dT%H:%M:%S.%f')
+    _dates.append(date)
+
 with open("matches.csv", "w") as write_file:
     write_file.write('id,referee,match_time,first_lineman,second_lineman,stadium_id,home_team,away_team,manager_scheduled\n')
     for i in range(MATCHES_NUM):
@@ -98,7 +112,7 @@ with open("matches.csv", "w") as write_file:
         data = [
             i+1,
             fake.profile()['name'],
-            fake.date_time().strftime('%Y-%m-%dT%H:%M'),
+            random.choice(_dates),
             fake.profile()['name'],
             fake.profile()['name'],
             stad_id,

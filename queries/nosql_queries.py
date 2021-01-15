@@ -171,7 +171,7 @@ if __name__ == "__main__":
     users, matches, stadiums, teams = mydb['users'], mydb['matches'],mydb['stadiums'],mydb['teams']
     # view_one_doc([teams])
     
-    # q_1(users,matches,teams)
+    q_1(users,matches,teams)
     # q_2(users,matches)
     # q_3(users,matches)
     # q_4(users, matches)
@@ -185,3 +185,5 @@ if __name__ == "__main__":
 
     # when finished
     myclient.close()
+
+    #TODO: Add distinct and add mongo shell comands for these quereies.

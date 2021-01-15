@@ -4,12 +4,12 @@ import random
 from random import randint
 
 #matcehs and users count
-itrs = 500000
+itrs = 200000
 
 TEAMS_NUM = 1000
 STADIUMS_NUM = 200
 CITY_NUM = 500
-DATES_COUNT = itrs / 10
+DATES_COUNT = itrs // 10
 fake = Faker('en_US')
 
 #get list of cities
@@ -26,7 +26,7 @@ managers = []
 fans = []
 with open("users.json", "w") as write_file:
     for i in range(itrs):
-        if i % 1000 == 0: print (f"user:  Iteration: {i}")
+        if i % 1000 == 0: print (f"user:  Iteration: {i//1000}K")
         ev = random.randint(0, 2)
 
         role = 'manager' if (ev==0 or i==0) else 'fan'
@@ -103,7 +103,7 @@ data_y = []
 data = []
 with open("matches.json", "w") as write_file:
     for i in range(itrs):
-        if i % 1000 == 0: print (f"Match:  Iteration: {i}")
+        if i % 1000 == 0: print (f"Match:  Iteration: {i//1000}K")
 
         m_id = match_ids[i]
 
