@@ -1,39 +1,14 @@
-1- Given a matchid get set of free seats in the stadium.
+Optimization Techniques:
+    1- Indexing 
+        (select users from specific city that watched a specific team in the team's home match).
+    2- Partitioning by range 
+        (select users that attended matches in range of date).
+    3- Partitioning by hash
+        (select users that attended any match and sit on the first row i.e. y = 1).
+    4- Multiple Indexing 
+        (select users that attended any match and sit far i.e. x > 20 and y > 50).
+    5- Query Optimization
+        (we will optimize some/all above queries).
+    6- Memory buffer (cashing).
 
-index_x         index_y
-
-2- Get set of attendence of matches in specific day.
-
-fname           lname           index_x         index_y         team_home       team_away       stad_name
-
-3- For a user get history of all his matches (attended)
-
-index_x         index_y         team_home       team_away       stad_name       date_time
-
-3_2 - For each manager get history of scheduled matches
-
-username        team_home       tean_away       stad_name       date_time
-
-4- Set of Matches for specific team.
-
-team_home       team_away       refree          audience_count  stad_name       date_time
-
-5- Avg/Max/Min/Totalcount audience for each team in his home matches.
-
-team_name       Avg             Max             Min             Totalcount
-
-6- History of reservations for specific stadium.
-
-(stad_name)       fname           lname           index_x         index_y         team_home       team_away       date_time
-
-7- Get all audience of a specific team that are less than 30 years.
-
-fname           lname           countOfMatches
-
-8- Get all audience of a specific team that are females.
-
-fname           lname           countOfMatches  
-
-9- For every user get number of stadiums he visited.
-
-fname           lname           countOfStadiums
+    for all selection statements select fname and lname of the users.
