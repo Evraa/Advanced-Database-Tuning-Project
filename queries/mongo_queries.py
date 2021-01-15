@@ -25,23 +25,45 @@ def view_one_doc(cols):
     for col in cols:
         print (col.find_one())
 
-def q_1(match_obj,match_id=ObjectId('84eb185ed16d7a6b818d2389')):
+
+def q_1(user_obj, match_obj,team_obj,team_id=ObjectId('2f884164f21ba9602d8263db'),city="South Tyrone"):
     '''
-        1- Given a matchid get set of free seats in the stadium.
+        1- select users from specific city that watched a specific team in the team's home match
     '''
 
-    #first get the match we are taking about
+    # evs = user_obj.find({'city':city},{'_id':1})
+    # for ev in evs:
+    #     pprint.pprint(ev)
+    # return
+
     pipeline = [
-        {'$match': {'_id':match_id}},
-        {'$project': {'users_reserved.x_i':1,'users_reserved.y_i':1}}
+        #1- find the match_ids with team_x as home
+        {'$match': {'teams.home':team_obj.find_one(team_id)['team_name']}},
+        {'$project': {'_id':0,'users_reserved.user_id':1} },
+        {'$unwind':"$users_reserved"},
+        #2- unwind and group fans
+        {'$group':{'_id':'$users_reserved.user_id'}},
+        #3- match fans with users
+        {'$lookup':{
+            'from':'users',
+            'localField':'_id',
+            'foreignField':'_id',
+            'as':'users_info'
+        }},
+        #4- get fans at specific city
+        {'$match': {'users_info.city':city}},
+        #5- project results
+        {'$project':{'_id':0,'fname':'users_info.fname','lname':'users_info.lname'}}
     ]
 
     match_docs = match_obj.aggregate(pipeline)
-
+    print ("Printing Results..")
+    count = 0
     for match_doc in match_docs:
+        
         pprint.pprint(match_doc)
-
-    #NOTE: Can't get the FREE Seats
+        count+=1
+    print (f'Results Count: {count}')
 
 
 def q_2(user_obj,match_obj,date='1981-07-02T07:57:33.000000'):
@@ -78,7 +100,7 @@ def q_2(user_obj,match_obj,date='1981-07-02T07:57:33.000000'):
         pprint.pprint(match_doc)
 
 
-def q_3_fan(user_obj, match_obj, user_id=ObjectId('5ca3958688a8c7d732c0526f')):
+def q_3(user_obj, match_obj, user_id=ObjectId('5ca3958688a8c7d732c0526f')):
     '''
     3- For a user get history of all his matches // ATTENDED
     '''
@@ -114,36 +136,6 @@ def q_3_fan(user_obj, match_obj, user_id=ObjectId('5ca3958688a8c7d732c0526f')):
 
 
 
-def q_3_man(user_obj, match_obj, user_id=ObjectId('e536d09303e53afe634eb0b4')):
-    '''
-        3_2: list all managers with their matches scheduled info.
-    '''
-    #get managers
-
-    pipeline = [
-        {'$match': {'_id':user_id}},
-        
-        {'$project': {'_id':1, 'username':1,'role':1}},
-
-        {'$lookup':{
-            'from':'matches',
-            'localField':'_id',
-            'foreignField':'manager_scheduled',
-            'as':'matches_info'
-        }},
-
-        {'$project': { 'username':1, 'matches_info.teams':1, 'matches_info.date_time':1,
-                        'matches_info.stadium':1, 
-        }},
-    ]
-
-
-    user_docs = user_obj.aggregate(pipeline)
-
-    for user_doc in user_docs:
-        pprint.pprint(user_doc)
-
-
 def q_4(team_obj, match_obj, team_id=ObjectId('2f884164f21ba9602d8263db')):
     '''
     4- Set of Matches for specific team.
@@ -167,96 +159,22 @@ def q_4(team_obj, match_obj, team_id=ObjectId('2f884164f21ba9602d8263db')):
         pprint.pprint(match)
 
 
-def q_5(team_obj, match_obj, team_id=ObjectId('2f884164f21ba9602d8263db')):
-    #get team name
-    team_name = team_obj.find_one({'_id':team_id})
-    
-    #get matches
-    matches = match_obj.find({'teams.home':team_name['team_name']}, {'users_reserved':1})
-    results = []
-    for match in matches:
-        results.append(len(match['users_reserved']))
-    
-    stat= (min(results),max(results),sum(results)/len(results),sum(results))
-    return (stat)
-
-def q_6(stad_obj, user_obj, match_obj, stad_id = ObjectId('1539a9451eb51a34df87c3bc')):
-    '''
-    6- History of reservations for specific stadium. //Lake Stephanieberg
-    '''
-
-    #get stad name
-    stad_name = stad_obj.find_one({'_id':stad_id})['stad_name']
-    #get matches
-    matches = match_obj.find({'stadium.name':stad_name}, {'teams':1,'date_time':1,'users_reserved':1})
-    results = []
-    for match in matches:
-        reservations = match['users_reserved']
-        for reservation in reservations:
-            user_id = reservation['user_id']
-            x_i = reservation['x_i']
-            y_i = reservation['y_i']
-
-            user = user_obj.find_one({'_id':user_id},{'fname':1,'lname':1})
-            result = [
-                stad_name,
-                user['fname'],
-                user['lname'],
-                x_i, y_i,
-                match['teams']['home'],
-                match['teams']['away'],
-                match['date_time']
-            ]
-            results.append(result)
-    # print (len(results))
-    return results
-
-def q_8(team_obj, match_obj, user_obj, team_id=ObjectId('2f884164f21ba9602d8263db')):
-    '''
-    8- Get all audience of a specific team that are females. //team: Navarro Inc
-
-    fname           lname           countOfMatches
-    '''
-    #get team name
-    team_name = team_obj.find_one({'_id':team_id},{'team_name':1})
-    #get matches
-    matches = match_obj.find({
-        '$or':[
-            {'teams.home':team_name['team_name']},
-            {'teams.away':team_name['team_name']}
-        ]
-        }, {'users_reserved':1})
-    results = []
-    for match in matches:
-        reservations = match['users_reserved']
-        for reservation in reservations:
-            user_id = reservation['user_id']
-            user = user_obj.find_one({'_id':user_id,'gender':'F'},{'fname':1,'lname':1})
-            if user is not None:
-                result = [user['fname'],user['lname']]
-                results.append(result)
-    print (len(results))
-    return results
 
 
 if __name__ == "__main__":
     mydb, myclient = create_client("adv_db_prj")
     users, matches, stadiums, teams = mydb['users'], mydb['matches'],mydb['stadiums'],mydb['teams']
-    # view_one_doc([matches])
+    # view_one_doc([teams])
     
-    # q_1(matches)
+    q_1(users,matches,teams)
     # q_2(users,matches)
-    # q_3_fan(users,matches)
-    # q_3_man(users, matches)
-    q_4(teams, matches)
-    # q_5(teams, matches)
-    # q_6(stadiums, users, matches)
-    # q_8(teams, matches, users)
-
+    # q__3(users,matches)
+    # q_4(teams, matches)
+    
 
     # first_five = users.find().limit(50)
     # for f in first_five:
-    #     print (f['_id'], f['role'])
+        # print (f['_id'], f['city'])
 
 
     # when finished
