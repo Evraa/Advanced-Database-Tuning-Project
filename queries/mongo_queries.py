@@ -129,27 +129,39 @@ def q_3(user_obj, match_obj):
 
 
 
-def q_4(team_obj, match_obj, team_id=ObjectId('2f884164f21ba9602d8263db')):
+def q_4(user_obj, match_obj):
     '''
-    4- Set of Matches for specific team.
+    2 -> 15
+    far : x > 7 and y > 7
+    (select users that attended any match and sit far i.e. x = 20 and y = 50).
     '''
     
-    #get matches
-    matches = match_obj.find({
-        '$or':[
-            {'teams.home':team_obj.find_one({'_id':team_id})['team_name']},
-            {'teams.away':team_obj.find_one({'_id':team_id})['team_name']}
-        ]
-        },{
-            '_id':0, 'team_home':'$teams.home','team_away':'$teams.away', 'referee':1,
-            'stad_name':'$stadium.name', 'date_time':1,
+    pipeline = [
+        {'$project': {'_id':0, 'users_reserved.y_i':1,'users_reserved.x_i':1, 'users_reserved.user_id':1}},
+        {'$unwind': '$users_reserved'},
+        {'$match': {  '$and': [ {'users_reserved.y_i': {'$gt':7}} , 
+                                {'users_reserved.x_i': {'$gt':7}}
+                            ] 
+                    }},
 
-            'audience_count': { '$cond': { 'if': { '$isArray': "$users_reserved" }, 
-            'then': { '$size': "$users_reserved" }, 'else': "NA"}}
-        })
+        {'$lookup':{
+            'from':'users',
+            'localField':'users_reserved.user_id',
+            'foreignField':'_id',
+            'as':'users_info'
+        }},
+        {'$project':{'_id':0,'fname':'$users_info.fname','lname':'$users_info.lname'}}
+                    
+    ]
 
-    for match in matches:
-        pprint.pprint(match)
+    match_docs = match_obj.aggregate(pipeline)
+    print ("Printing Results..")
+    count = 0
+    for match_doc in match_docs:
+        
+        pprint.pprint(match_doc)
+        count+=1
+    print (f'Results Count: {count}')
 
 
 
@@ -161,8 +173,8 @@ if __name__ == "__main__":
     
     # q_1(users,matches,teams)
     # q_2(users,matches)
-    q_3(users,matches)
-    # q_4(teams, matches)
+    # q_3(users,matches)
+    q_4(users, matches)
     
 
     # first_five = users.find().limit(50)
