@@ -49,21 +49,21 @@ CREATE TABLE reservations (
 	username             varchar(100)  NOT NULL    ,
 	x                    int  NOT NULL    ,
 	y                    int  NOT NULL    ,
-	CONSTRAINT pk_reservations PRIMARY KEY ( match_id, username )
+	CONSTRAINT pk_reservations PRIMARY KEY ( match_id, x, y )
  );
 
 CREATE INDEX fk_reservations_matches ON reservations ( match_id );
 
 CREATE INDEX fk_reservations_users ON reservations ( username );
 
-ALTER TABLE matches ADD CONSTRAINT fk_matches_stadiums FOREIGN KEY ( stadium_id ) REFERENCES stadiums( id ) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE matches ADD CONSTRAINT fk_matches_stadiums FOREIGN KEY ( stadium_id ) REFERENCES stadiums( id ) ON DELETE CASCADE ON UPDATE CASCADE;
 
-ALTER TABLE matches ADD CONSTRAINT fk_matches_teams FOREIGN KEY ( away_team ) REFERENCES teams( id ) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE matches ADD CONSTRAINT fk_matches_teams FOREIGN KEY ( away_team ) REFERENCES teams( id ) ON DELETE CASCADE ON UPDATE CASCADE;
 
-ALTER TABLE matches ADD CONSTRAINT fk_matches_teams_0 FOREIGN KEY ( home_team ) REFERENCES teams( id ) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE matches ADD CONSTRAINT fk_matches_teams_0 FOREIGN KEY ( home_team ) REFERENCES teams( id ) ON DELETE CASCADE ON UPDATE CASCADE;
 
-ALTER TABLE matches ADD CONSTRAINT fk_matches_users FOREIGN KEY ( manager_scheduled ) REFERENCES users( username ) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE matches ADD CONSTRAINT fk_matches_users FOREIGN KEY ( manager_scheduled ) REFERENCES users( username ) ON DELETE CASCADE ON UPDATE CASCADE;
 
-ALTER TABLE reservations ADD CONSTRAINT fk_reservations_matches FOREIGN KEY ( match_id ) REFERENCES matches( id ) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE reservations ADD CONSTRAINT fk_reservations_matches FOREIGN KEY ( match_id ) REFERENCES matches( id ) ON DELETE CASCADE ON UPDATE CASCADE;
 
-ALTER TABLE reservations ADD CONSTRAINT fk_reservations_users FOREIGN KEY ( username ) REFERENCES users( username ) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE reservations ADD CONSTRAINT fk_reservations_users FOREIGN KEY ( username ) REFERENCES users( username ) ON DELETE CASCADE ON UPDATE CASCADE;
