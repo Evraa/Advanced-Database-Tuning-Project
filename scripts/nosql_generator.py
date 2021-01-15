@@ -3,11 +3,22 @@ from faker import Faker
 import random
 from random import randint
 
+#matcehs and users count
+itrs = 500000
 
-itrs = 100000
 TEAMS_NUM = 1000
-STADIUMS_NUM = 100
+STADIUMS_NUM = 200
+CITY_NUM = 500
+DATES_COUNT = itrs / 10
 fake = Faker('en_US')
+
+#get list of cities
+_cities = []
+city = fake.city()
+while city in _cities:
+    city = fake.city()
+_cities.append(city)
+
 
 data = []
 user_ids = []
@@ -45,7 +56,7 @@ with open("users.json", "w") as write_file:
                     'lname':fake.last_name(),
                     'bdate':fake.date_time().strftime('%Y-%m-%dT%H:%M:%S.%f'),
                     'gender':fake.profile()['sex'],
-                    'city':fake.city()
+                    'city':random.choice(_cities)
                 }
         data.append(my_dict)
     json.dump(data, write_file)
@@ -78,6 +89,13 @@ for i in range (STADIUMS_NUM):
 
     stads_id = {"$oid": fake.hexify('^^^^^^^^^^^^^^^^^^^^^^^^')}
     stads_ids.append(stads_id)
+
+#unique dates but specific
+_dates = []
+for i in range (DATES_COUNT):
+    date = fake.date_time().strftime('%Y-%m-%dT%H:%M:%S.%f')
+    _dates.append(date)
+
 
 matches_picked = []
 managers_taken = []
@@ -117,7 +135,7 @@ with open("matches.json", "w") as write_file:
         my_dict = {
                     '_id':m_id,
                     'referee':fake.profile()['name'],
-                    'date_time':fake.date_time().strftime('%Y-%m-%dT%H:%M:%S.%f'),
+                    'date_time':random.choice(_dates),
                     'teams':{
                         'home':team_x,
                         'away':team_y
