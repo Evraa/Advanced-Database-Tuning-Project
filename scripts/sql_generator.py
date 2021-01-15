@@ -8,10 +8,14 @@ TEAMS_NUM = 20
 STADIUMS_NUM = 30
 MATCHES_NUM = 400
 RESERVATIONS_NUM = 1000000
+MIN_STAD_SIZE = 100
+MAX_STAD_SIZE = 500
+
 fake = Faker('en_US')
 
 managers = []
 fans = []
+usernames = set()
 with open("users.csv", "w") as write_file:
     write_file.write('username,email,password,fname,lname,role,bdate,gender,city\n')
     for i in range(USERS_NUM):
@@ -21,9 +25,11 @@ with open("users.csv", "w") as write_file:
 
         role = 'manager' if (ev==0 or i==0) else 'fan'
 
-        username = fake.profile()['name']
-        
-        reserve_info = {}
+        username = fake.user_name()
+        while username in usernames:
+            username = fake.user_name()
+        usernames.add(username)
+
         if role == 'manager':
             managers.append(username)
         else:
@@ -41,8 +47,7 @@ with open("users.csv", "w") as write_file:
             fake.city()
         ]
         data = [str(d) for d in data]
-        write_file.write(','.join(data))
-        write_file.write('\n')
+        write_file.write(','.join(data)+'\n')
 
 with open("teams.csv", "w") as write_file:
     write_file.write('id,name\n')
@@ -55,15 +60,17 @@ with open("teams.csv", "w") as write_file:
             '"'+fake.profile()['company']+'"'
         ]
         data = [str(d) for d in data]
-        write_file.write(','.join(data))
-        write_file.write('\n')
+        write_file.write(','.join(data)+'\n')
 
 
 stad_x_y = []
 with open("stadiums.csv", "w") as write_file:
     write_file.write('id,width,height,name\n')
     for i in range(STADIUMS_NUM):
-        stad_x_y.append((randint(2,15), randint(2,15)))
+        stad_x_y.append((
+            randint(MIN_STAD_SIZE, MAX_STAD_SIZE),
+            randint(MIN_STAD_SIZE, MAX_STAD_SIZE)
+        ))
         if i % 10 == 0:
             print (f"stadium:  Iteration: {i}")
         data = [
@@ -73,8 +80,7 @@ with open("stadiums.csv", "w") as write_file:
             fake.city()
         ]
         data = [str(d) for d in data]
-        write_file.write(','.join(data))
-        write_file.write('\n')
+        write_file.write(','.join(data)+'\n')
     
 match_stadium = []
 with open("matches.csv", "w") as write_file:
@@ -110,16 +116,22 @@ with open("matches.csv", "w") as write_file:
         write_file.write(','.join(data))
         write_file.write('\n')
 
+reserve_info = set()
+
 with open("reservations.csv", "w") as write_file:
     write_file.write('x,y,username,match_id\n')
     for i in range(RESERVATIONS_NUM):
         if i % 1000 == 0:
             print(f"Reservation: Iteration: {i}")
-        
-        match_id = randint(1, MATCHES_NUM)
+
         fan = random.choice(fans)
-        x = randint(0, stad_x_y[match_stadium[match_id-1]-1][0])
-        y = randint(0, stad_x_y[match_stadium[match_id-1]-1][1])
+        while True:
+            match_id = randint(1, MATCHES_NUM)
+            x = randint(0, stad_x_y[match_stadium[match_id-1]-1][0])
+            y = randint(0, stad_x_y[match_stadium[match_id-1]-1][1])
+            if (match_id, x, y) not in reserve_info:
+                break
+        reserve_info.add((match_id, x, y))
 
         data = [
             x,
@@ -128,5 +140,4 @@ with open("reservations.csv", "w") as write_file:
             match_id
         ]
         data = [str(d) for d in data]
-        write_file.write(','.join(data))
-        write_file.write('\n')
+        write_file.write(','.join(data)+'\n')

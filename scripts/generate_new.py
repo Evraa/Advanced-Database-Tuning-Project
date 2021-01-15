@@ -21,7 +21,7 @@ with open("users.json", "w") as write_file:
         role = 'manager' if (ev==0 or i==0) else 'fan'
 
         #unique
-        username = fake.profile()['name']
+        username = fake.user_name()
 
         #unique
         user_id = {"$oid": fake.hexify('^^^^^^^^^^^^^^^^^^^^^^^^')}
