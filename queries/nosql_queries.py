@@ -3,6 +3,7 @@ import json
 from bson.objectid import ObjectId
 import numpy as np
 import pprint
+import random
 
 def create_client(db_name):
     myclient = pymongo.MongoClient("mongodb://localhost:27017/")
@@ -51,6 +52,7 @@ def q_1(user_obj, match_obj,team_obj, city, team_id):
         {'$project':{'_id':0,'fname':'$users_info.fname','lname':'$users_info.lname'}}
     ]
 
+    
     match_docs = match_obj.aggregate(pipeline)
     print ("Printing Results..")
     count = 0
@@ -196,18 +198,58 @@ def q_6(user_obj, match_obj):
     print (f'Results Count: {count}')
 
 
+def get_teams_fans(user_obj, match_obj,team_obj, team_id):
+    '''
+        print teams fans and cities.
+    '''
+    pipeline = [
+        #1- find the match_ids with team_x as home
+        {'$match': {'teams.home': team_obj.find_one(team_id)['team_name']} },
+        {'$project': {'_id':0,'users_reserved.user_id':1} },
+        #2- unwind and group fans
+        {'$unwind':"$users_reserved"},
+        {'$group':{'_id':'$users_reserved.user_id'}},
+        #3- match fans with users
+        {'$lookup':{
+            'from':'users',
+            'localField':'_id',
+            'foreignField':'_id',
+            'as':'users_info'
+        }},
+        #5- project results
+        {'$project':{'_id':0,'fname':'$users_info.fname','city':'$users_info.city'}}
+    ]
+
+    match_docs = match_obj.aggregate(pipeline)
+    print ("Preprocessing..")
+    count = 0
+    for match_doc in match_docs:
+        count+=1
+        if count % 100 == 0:
+            return match_doc['fname'], match_doc['city']
+    
+
+def get_random_team_id(team_obj):
+    random_team = list(team_obj.aggregate([{'$sample': {'size':1}}]))[0]
+    team_id = random_team["_id"]
+    return team_id
+
 if __name__ == "__main__":
     mydb, myclient = create_client("adv_db_prj_3")
     users, matches, stadiums, teams = mydb['users'], mydb['matches'],mydb['stadiums'],mydb['teams']
+
+    ## PREPROCESSING ##
     # view_one_doc([users,matches,stadiums,teams])
+    rand_team_id = get_random_team_id(teams)
+    fname,city = get_teams_fans(users, matches, teams, rand_team_id)
     
-    # q_1(users, matches, teams,city="South Jeffreybury", team_id = ObjectId('8f85a4dabefe50c1b01beace'))
+    # q_1(users, matches, teams,city=city[0], team_id = rand_team_id)
     # q_2(users,matches)
     # q_3(users,matches)
-    # q_4(users, matches, teams, fname="Kathy", 
-    #       city="South Jeffreybury", team_id = ObjectId('8f85a4dabefe50c1b01beace'))
-    # q_5(users, matches, teams, fname="Kathy", 
-    #       city="South Jeffreybury", team_id = ObjectId('8f85a4dabefe50c1b01beace'))
+    # q_4(users, matches, teams, fname=fname[0], 
+    #       city=city[0], team_id = rand_team_id)
+    # q_5(users, matches, teams, fname=fname[0], 
+    #       city=city[0], team_id = rand_team_id)
     
     # q_6(users,matches)
     
