@@ -11,15 +11,17 @@ DATES_COUNT = 400//2
 RESERVATIONS_NUM = 1000000
 MIN_STAD_SIZE = 100
 MAX_STAD_SIZE = 500
+CITY_NUM = 500
 
 fake = Faker('en_US')
 
 #get list of cities
 _cities = []
-city = fake.city()
-while city in _cities:
+for _ in range(CITY_NUM):
     city = fake.city()
-_cities.append(city)
+    while city in _cities:
+        city = fake.city()
+    _cities.append(city)
 
 managers = []
 fans = []
@@ -53,7 +55,7 @@ with open("users.csv", "w") as write_file:
             role,
             fake.date_time().strftime('%Y-%m-%d'),
             fake.profile()['sex'],
-            random.choice(city)
+            random.choice(_cities)
         ]
         data = [str(d) for d in data]
         write_file.write(','.join(data)+'\n')
@@ -95,7 +97,7 @@ match_stadium = []
 #unique dates but specific
 _dates = []
 for i in range (DATES_COUNT):
-    date = fake.date_time().strftime('%Y-%m-%dT%H:%M:%S.%f')
+    date = fake.date_time().strftime('%Y-%m-%dT%H:%M')
     _dates.append(date)
 
 with open("matches.csv", "w") as write_file:
