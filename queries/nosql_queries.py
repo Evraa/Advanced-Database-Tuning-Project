@@ -4,6 +4,7 @@ from bson.objectid import ObjectId
 import numpy as np
 import pprint
 import random
+import time
 
 def create_client(db_name):
     myclient = pymongo.MongoClient("mongodb://localhost:27017/")
@@ -27,7 +28,7 @@ def view_one_doc(cols):
         print (col.find_one())
 
 
-def q_1(user_obj, match_obj,team_obj, city, team_id):
+def q_1(db, user_obj, match_obj,team_obj, city, team_id):
     '''
         (select users (with specific fname or from specific city) that watched a specific team in the team's home match).
     '''
@@ -54,13 +55,17 @@ def q_1(user_obj, match_obj,team_obj, city, team_id):
 
     
     match_docs = match_obj.aggregate(pipeline)
-    print ("Printing Results..")
-    count = 0
-    for match_doc in match_docs:
+    
+    # results = db.command('aggregate', 'match_obj', pipeline=pipeline, explain=True)
+    # pprint.pprint(results)
+
+    # print ("Printing Results..")
+    # count = 0
+    # for match_doc in match_docs:
         
-        pprint.pprint(match_doc)
-        count+=1
-    print (f'Results Count: {count}')
+    #     pprint.pprint(match_doc)
+    #     count+=1
+    # print (f'Results Count: {count}')
 
 
 def q_2(user_obj, match_obj):
@@ -86,13 +91,13 @@ def q_2(user_obj, match_obj):
     ]
 
     match_docs = match_obj.aggregate(pipeline)
-    print ("Printing Results..")
-    count = 0
-    for match_doc in match_docs:
+    # print ("Printing Results..")
+    # count = 0
+    # for match_doc in match_docs:
         
-        pprint.pprint(match_doc)
-        count+=1
-    print (f'Results Count: {count}')
+    #     pprint.pprint(match_doc)
+    #     count+=1
+    # print (f'Results Count: {count}')
 
 def q_3(user_obj, match_obj):
     '''
@@ -118,13 +123,13 @@ def q_3(user_obj, match_obj):
     ]
 
     match_docs = match_obj.aggregate(pipeline)
-    print ("Printing Results..")
-    count = 0
-    for match_doc in match_docs:
+    # print ("Printing Results..")
+    # count = 0
+    # for match_doc in match_docs:
         
-        pprint.pprint(match_doc)
-        count+=1
-    print (f'Results Count: {count}')
+    #     pprint.pprint(match_doc)
+    #     count+=1
+    # print (f'Results Count: {count}')
 
 
 def q_4(user_obj, match_obj,team_obj, fname, city, team_id):
@@ -155,13 +160,13 @@ def q_4(user_obj, match_obj,team_obj, fname, city, team_id):
     ]
 
     match_docs = match_obj.aggregate(pipeline)
-    print ("Printing Results..")
-    count = 0
-    for match_doc in match_docs:
+    # print ("Printing Results..")
+    # count = 0
+    # for match_doc in match_docs:
         
-        pprint.pprint(match_doc)
-        count+=1
-    print (f'Results Count: {count}')
+    #     pprint.pprint(match_doc)
+    #     count+=1
+    # print (f'Results Count: {count}')
 
 
 def q_5(user_obj, match_obj,team_obj, fname, city, team_id):
@@ -189,13 +194,13 @@ def q_6(user_obj, match_obj):
     ]
 
     match_docs = match_obj.aggregate(pipeline)
-    print ("Printing Results..")
-    count = 0
-    for match_doc in match_docs:
+    # print ("Printing Results..")
+    # count = 0
+    # for match_doc in match_docs:
         
-        pprint.pprint(match_doc)
-        count+=1
-    print (f'Results Count: {count}')
+    #     pprint.pprint(match_doc)
+    #     count+=1
+    # print (f'Results Count: {count}')
 
 
 def get_teams_fans(user_obj, match_obj,team_obj, team_id):
@@ -232,27 +237,35 @@ def get_teams_fans(user_obj, match_obj,team_obj, team_id):
 def get_random_team_id(team_obj):
     random_team = list(team_obj.aggregate([{'$sample': {'size':1}}]))[0]
     team_id = random_team["_id"]
+    # results = team_obj.find({'_id':team_id}).explain()
+    # pprint.pprint(results)
     return team_id
 
 if __name__ == "__main__":
-    mydb, myclient = create_client("adv_db_prj_3")
+    mydb, myclient = create_client("adv_db_prj_1")
     users, matches, stadiums, teams = mydb['users'], mydb['matches'],mydb['stadiums'],mydb['teams']
 
     ## PREPROCESSING ##
     # view_one_doc([users,matches,stadiums,teams])
-    rand_team_id = get_random_team_id(teams)
-    fname,city = get_teams_fans(users, matches, teams, rand_team_id)
-    
-    # q_1(users, matches, teams,city=city[0], team_id = rand_team_id)
+    # rand_team_id = get_random_team_id(teams)
+    # fname,city = get_teams_fans(users, matches, teams, rand_team_id)
+    # print (rand_team_id, fname, city)
+    print ("START>>")
+    start_time = time.time()
+
+    # q_1(mydb, users, matches, teams,city="Lake Jose", team_id = ObjectId('b0ec473622f0b7b355c92d45'))
     # q_2(users,matches)
     # q_3(users,matches)
-    # q_4(users, matches, teams, fname=fname[0], 
-    #       city=city[0], team_id = rand_team_id)
-    # q_5(users, matches, teams, fname=fname[0], 
+
+    # q_4(users, matches, teams, fname="Cody", 
+    #       city="Lake Jose", team_id = ObjectId('b0ec473622f0b7b355c92d45'))
+
+    # q_5(users, matches, teams, fname="Cody", 
     #       city=city[0], team_id = rand_team_id)
     
     # q_6(users,matches)
     
+    print("--- %s seconds ---" % (time.time() - start_time))
 
 
     # first_five = teams.find().limit(50)
@@ -264,4 +277,13 @@ if __name__ == "__main__":
     # when finished
     myclient.close()
 
-    #TODO: Add distinct and add mongo shell comands for these quereies.
+'''
+    2m:
+    fname="Lindsay", city="North Eric", team_id = ObjectId('5c7a10973f34b5df9039b307'))
+
+    400k:
+    ba933ec98987df4721d0a730    Julia   East Garyton
+
+    50K:
+    b0ec473622f0b7b355c92d45    Cody    Lake Jose
+'''

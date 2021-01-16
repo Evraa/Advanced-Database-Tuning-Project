@@ -21,3 +21,6 @@
 ### to add the database to mongodb
     + start mongo: sudo systemctl start mongod
     + scripts/ bash import_dbs.sh
+
+### to clear linux cache 
+    ~ sync && echo 3 | sudo tee /proc/sys/vm/drop_caches
