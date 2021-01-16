@@ -27,7 +27,7 @@ managers = []
 fans = []
 usernames = set()
 with open("users.csv", "w") as write_file:
-    write_file.write('id,username,email,password,fname,lname,role,bdate,gender,city\n')
+    write_file.write('username,email,password,fname,lname,role,bdate,gender,city\n')
     for i in range(USERS_NUM):
         if i % 1000 == 0: 
             print (f"user:  Iteration: {i}")
@@ -41,12 +41,11 @@ with open("users.csv", "w") as write_file:
         usernames.add(username)
 
         if role == 'manager':
-            managers.append(i+1)
+            managers.append(username)
         else:
-            fans.append(i+1)
+            fans.append(username)
         
         data = [
-            i+1,
             username,
             fake.profile()['mail'],
             fake.password(length=8),
@@ -136,7 +135,7 @@ with open("matches.csv", "w") as write_file:
 reserve_info = set()
 
 with open("reservations.csv", "w") as write_file:
-    write_file.write('x,y,user_id,match_id\n')
+    write_file.write('x,y,username,match_id\n')
     for i in range(RESERVATIONS_NUM):
         if i % 1000 == 0:
             print(f"Reservation: Iteration: {i}")
