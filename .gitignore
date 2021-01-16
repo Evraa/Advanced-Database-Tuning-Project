@@ -3,3 +3,4 @@ scripts/*.csv
 .vscode
 *.json
 data
+scripts/*_DB
