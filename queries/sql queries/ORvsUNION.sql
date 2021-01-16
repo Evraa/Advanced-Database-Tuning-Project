@@ -5,7 +5,7 @@ Unoptimized
 SELECT fname, lname 
 FROM `users` AS U, `matches` AS M, `reservations` AS R, `teams` AS T 
 WHERE R.match_id = M.id AND U.username = R.username AND M.home_team = T.id AND 
-T.name = 'est' AND (U.city = 'Port Leathaside' or U.fname LIKE 'a%');
+T.name = 'est' AND (U.city = 'Port Leathaside' or U.fname = 'Michael');
 
 
 /*
@@ -18,7 +18,7 @@ FROM `matches` AS M
     INNER JOIN `reservations` AS R ON R.match_id = M.id 
     INNER JOIN (
         (SELECT fname, lname, username FROM `users` WHERE city = 'Port Leathaside') UNION
-        (SELECT fname, lname, username FROM `users` WHERE fname LIKE 'a%')
+        (SELECT fname, lname, username FROM `users` WHERE fname = 'Michael')
     ) AS U ON R.username = U.username;
 
 /*
@@ -49,7 +49,7 @@ Full SQL Queries:
 SELECT fname, lname 
 FROM `users` AS U, `matches` AS M, `reservations` AS R, `teams` AS T 
 WHERE R.match_id = M.id AND U.username = R.username AND M.home_team = T.id AND 
-T.name = 'est' AND (U.city = 'Port Leathaside' or U.fname LIKE 'a%');
+T.name = 'est' AND (U.city = 'Port Leathaside' or U.fname = 'Michael');
 
 
 
@@ -64,7 +64,7 @@ FROM `matches` AS M
     INNER JOIN `reservations` AS R ON R.match_id = M.id 
     INNER JOIN (
         (SELECT fname, lname, username FROM `users` WHERE city = 'Port Leathaside') UNION
-        (SELECT fname, lname, username FROM `users` WHERE fname LIKE 'a%')
+        (SELECT fname, lname, username FROM `users` WHERE fname = 'Michael')
     ) AS U ON R.username = U.username;
 
 
