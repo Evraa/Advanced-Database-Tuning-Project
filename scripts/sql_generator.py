@@ -3,21 +3,29 @@ import random
 from random import randint
 
 
-USERS_NUM = 500000
+USERS_NUM = 20000
 TEAMS_NUM = 20
 STADIUMS_NUM = 30
 MATCHES_NUM = 400
+DATES_COUNT = 400//2
 RESERVATIONS_NUM = 1000000
 MIN_STAD_SIZE = 100
 MAX_STAD_SIZE = 500
 
 fake = Faker('en_US')
 
+#get list of cities
+_cities = []
+city = fake.city()
+while city in _cities:
+    city = fake.city()
+_cities.append(city)
+
 managers = []
 fans = []
 usernames = set()
 with open("users.csv", "w") as write_file:
-    write_file.write('username,email,password,fname,lname,role,bdate,gender,city\n')
+    write_file.write('id,username,email,password,fname,lname,role,bdate,gender,city\n')
     for i in range(USERS_NUM):
         if i % 1000 == 0: 
             print (f"user:  Iteration: {i}")
@@ -31,11 +39,12 @@ with open("users.csv", "w") as write_file:
         usernames.add(username)
 
         if role == 'manager':
-            managers.append(username)
+            managers.append(i+1)
         else:
-            fans.append(username)
+            fans.append(i+1)
         
         data = [
+            i+1,
             username,
             fake.profile()['mail'],
             fake.password(length=8),
@@ -44,7 +53,7 @@ with open("users.csv", "w") as write_file:
             role,
             fake.date_time().strftime('%Y-%m-%d'),
             fake.profile()['sex'],
-            fake.city()
+            random.choice(city)
         ]
         data = [str(d) for d in data]
         write_file.write(','.join(data)+'\n')
@@ -83,6 +92,12 @@ with open("stadiums.csv", "w") as write_file:
         write_file.write(','.join(data)+'\n')
     
 match_stadium = []
+#unique dates but specific
+_dates = []
+for i in range (DATES_COUNT):
+    date = fake.date_time().strftime('%Y-%m-%dT%H:%M:%S.%f')
+    _dates.append(date)
+
 with open("matches.csv", "w") as write_file:
     write_file.write('id,referee,match_time,first_lineman,second_lineman,stadium_id,home_team,away_team,manager_scheduled\n')
     for i in range(MATCHES_NUM):
@@ -104,7 +119,7 @@ with open("matches.csv", "w") as write_file:
         data = [
             i+1,
             fake.profile()['name'],
-            fake.date_time().strftime('%Y-%m-%dT%H:%M'),
+            random.choice(_dates),
             fake.profile()['name'],
             fake.profile()['name'],
             stad_id,
@@ -119,7 +134,7 @@ with open("matches.csv", "w") as write_file:
 reserve_info = set()
 
 with open("reservations.csv", "w") as write_file:
-    write_file.write('x,y,username,match_id\n')
+    write_file.write('x,y,user_id,match_id\n')
     for i in range(RESERVATIONS_NUM):
         if i % 1000 == 0:
             print(f"Reservation: Iteration: {i}")

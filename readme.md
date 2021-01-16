@@ -21,7 +21,3 @@
 ### to add the database to mongodb
     + start mongo: sudo systemctl start mongod
     + scripts/ bash import_dbs.sh
-
-### Requirements
-    + pip install numpy (15 MB)
-    

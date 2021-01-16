@@ -46,7 +46,7 @@ CREATE INDEX fk_matches_users ON matches ( manager_scheduled );
 
 CREATE TABLE reservations ( 
 	match_id             int  NOT NULL    ,
-	username             varchar(100)  NOT NULL    ,
+	username             varchar(50)  NOT NULL    ,
 	x                    int  NOT NULL    ,
 	y                    int  NOT NULL    ,
 	CONSTRAINT pk_reservations PRIMARY KEY ( match_id, x, y )

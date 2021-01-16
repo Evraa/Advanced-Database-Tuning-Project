@@ -4,20 +4,22 @@ import random
 from random import randint
 
 #matcehs and users count
-itrs = 500000
+# itrs = 200000
+itrs = 200000
 
 TEAMS_NUM = 1000
 STADIUMS_NUM = 200
 CITY_NUM = 500
-DATES_COUNT = itrs / 10
+DATES_COUNT = itrs // 10
 fake = Faker('en_US')
 
 #get list of cities
 _cities = []
-city = fake.city()
-while city in _cities:
+for _ in range(CITY_NUM):
     city = fake.city()
-_cities.append(city)
+    while city in _cities:
+        city = fake.city()
+    _cities.append(city)
 
 
 data = []
@@ -25,8 +27,8 @@ user_ids = []
 managers = []
 fans = []
 with open("users.json", "w") as write_file:
-    for i in range(itrs):
-        if i % 1000 == 0: print (f"user:  Iteration: {i}")
+    for i in range(1000000):
+        if i % 1000 == 0: print (f"user:  Iteration: {i//1000}K")
         ev = random.randint(0, 2)
 
         role = 'manager' if (ev==0 or i==0) else 'fan'
@@ -64,7 +66,7 @@ with open("users.json", "w") as write_file:
 
 #unique match ids
 match_ids = []
-for i in range (itrs):
+for i in range (500000):
     match_id = {"$oid": fake.hexify('^^^^^^^^^^^^^^^^^^^^^^^^')}
     match_ids.append(match_id)
 
@@ -94,6 +96,8 @@ for i in range (STADIUMS_NUM):
 _dates = []
 for i in range (DATES_COUNT):
     date = fake.date_time().strftime('%Y-%m-%dT%H:%M:%S.%f')
+    while date in _dates:
+        date = fake.date_time().strftime('%Y-%m-%dT%H:%M:%S.%f')
     _dates.append(date)
 
 
@@ -102,8 +106,8 @@ managers_taken = []
 data_y = []
 data = []
 with open("matches.json", "w") as write_file:
-    for i in range(itrs):
-        if i % 1000 == 0: print (f"Match:  Iteration: {i}")
+    for i in range(500000):
+        if i % 1000 == 0: print (f"Match:  Iteration: {i//1000}K")
 
         m_id = match_ids[i]
 
