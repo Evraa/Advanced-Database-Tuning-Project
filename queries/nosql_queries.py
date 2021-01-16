@@ -26,7 +26,7 @@ def view_one_doc(cols):
         print (col.find_one())
 
 
-def q_1(user_obj, match_obj,team_obj,team_id=ObjectId('2f884164f21ba9602d8263db'),city="South Tyrone"):
+def q_1(user_obj, match_obj,team_obj):
     '''
         1- select users from specific city that watched a specific team in the team's home match
     '''
@@ -36,9 +36,16 @@ def q_1(user_obj, match_obj,team_obj,team_id=ObjectId('2f884164f21ba9602d8263db'
     #     pprint.pprint(ev)
     # return
 
+    # random_team = list(users.aggregate([{'$sample': {'size':1}}]))[0]['city']
+    # print(random_team)
+    # return
+    # for r in random_team:
+    #     pprint.pprint(r['team_name'])
+    # return
     pipeline = [
         #1- find the match_ids with team_x as home
-        {'$match': {'teams.home':team_obj.find_one(team_id)['team_name']}},
+        # {'$match': {'teams.home':team_obj.find_one(team_id)['team_name']}},
+        {'$match': {'teams.home': list(team_obj.aggregate([{'$sample': {'size':1}}]))[0]['team_name'] } },
         {'$project': {'_id':0,'users_reserved.user_id':1} },
         {'$unwind':"$users_reserved"},
         #2- unwind and group fans
@@ -51,7 +58,7 @@ def q_1(user_obj, match_obj,team_obj,team_id=ObjectId('2f884164f21ba9602d8263db'
             'as':'users_info'
         }},
         #4- get fans at specific city
-        {'$match': {'users_info.city':city}},
+        {'$match': {'users_info.city':list(users.aggregate([{'$sample': {'size':1}}]))[0]['city']}},
         #5- project results
         {'$project':{'_id':0,'fname':'$users_info.fname','lname':'$users_info.lname'}}
     ]
@@ -167,19 +174,19 @@ def q_4(user_obj, match_obj):
 
 
 if __name__ == "__main__":
-    mydb, myclient = create_client("adv_db_prj")
+    mydb, myclient = create_client("adv_db_prj_3")
     users, matches, stadiums, teams = mydb['users'], mydb['matches'],mydb['stadiums'],mydb['teams']
-    # view_one_doc([teams])
+    # view_one_doc([users,matches,stadiums,teams])
     
-    q_1(users,matches,teams)
+    # q_1(users,matches,teams)
     # q_2(users,matches)
     # q_3(users,matches)
     # q_4(users, matches)
     
 
-    # first_five = users.find().limit(50)
+    # first_five = teams.find().limit(50)
     # for f in first_five:
-        # print (f['_id'], f['city'])
+    #     print (f['_id'], f['team_name'])
 
 
 
