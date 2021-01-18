@@ -59,13 +59,13 @@ def q_1(db, user_obj, match_obj,team_obj, city, team_id):
     # results = db.command('aggregate', 'match_obj', pipeline=pipeline, explain=True)
     # pprint.pprint(results)
 
-    # print ("Printing Results..")
-    # count = 0
-    # for match_doc in match_docs:
+    print ("Printing Results..")
+    count = 0
+    for match_doc in match_docs:
         
-    #     pprint.pprint(match_doc)
-    #     count+=1
-    # print (f'Results Count: {count}')
+        # pprint.pprint(match_doc)
+        count+=1
+    print (f'Results Count: {count}')
 
 
 def q_2(user_obj, match_obj):
@@ -91,13 +91,13 @@ def q_2(user_obj, match_obj):
     ]
 
     match_docs = match_obj.aggregate(pipeline)
-    # print ("Printing Results..")
-    # count = 0
-    # for match_doc in match_docs:
+    print ("Printing Results..")
+    count = 0
+    for match_doc in match_docs:
         
-    #     pprint.pprint(match_doc)
-    #     count+=1
-    # print (f'Results Count: {count}')
+        # pprint.pprint(match_doc)
+        count+=1
+    print (f'Results Count: {count}')
 
 def q_3(user_obj, match_obj):
     '''
@@ -123,13 +123,13 @@ def q_3(user_obj, match_obj):
     ]
 
     match_docs = match_obj.aggregate(pipeline)
-    # print ("Printing Results..")
-    # count = 0
-    # for match_doc in match_docs:
+    print ("Printing Results..")
+    count = 0
+    for match_doc in match_docs:
         
-    #     pprint.pprint(match_doc)
-    #     count+=1
-    # print (f'Results Count: {count}')
+        # pprint.pprint(match_doc)
+        count+=1
+    print (f'Results Count: {count}')
 
 
 def q_4(user_obj, match_obj,team_obj, fname, city, team_id):
@@ -160,13 +160,13 @@ def q_4(user_obj, match_obj,team_obj, fname, city, team_id):
     ]
 
     match_docs = match_obj.aggregate(pipeline)
-    # print ("Printing Results..")
-    # count = 0
-    # for match_doc in match_docs:
+    print ("Printing Results..")
+    count = 0
+    for match_doc in match_docs:
         
-    #     pprint.pprint(match_doc)
-    #     count+=1
-    # print (f'Results Count: {count}')
+        # pprint.pprint(match_doc)
+        count+=1
+    print (f'Results Count: {count}')
 
 
 def q_5(user_obj, match_obj,team_obj, fname, city, team_id):
@@ -194,13 +194,13 @@ def q_6(user_obj, match_obj):
     ]
 
     match_docs = match_obj.aggregate(pipeline)
-    # print ("Printing Results..")
-    # count = 0
-    # for match_doc in match_docs:
+    print ("Printing Results..")
+    count = 0
+    for match_doc in match_docs:
         
-    #     pprint.pprint(match_doc)
-    #     count+=1
-    # print (f'Results Count: {count}')
+        # pprint.pprint(match_doc)
+        count+=1
+    print (f'Results Count: {count}')
 
 
 def get_teams_fans(user_obj, match_obj,team_obj, team_id):
@@ -242,7 +242,7 @@ def get_random_team_id(team_obj):
     return team_id
 
 if __name__ == "__main__":
-    mydb, myclient = create_client("adv_db_prj_1")
+    mydb, myclient = create_client("adv_db_prj_2")
     users, matches, stadiums, teams = mydb['users'], mydb['matches'],mydb['stadiums'],mydb['teams']
 
     ## PREPROCESSING ##
@@ -253,17 +253,17 @@ if __name__ == "__main__":
     print ("START>>")
     start_time = time.time()
 
-    # q_1(mydb, users, matches, teams,city="Lake Jose", team_id = ObjectId('b0ec473622f0b7b355c92d45'))
-    # q_2(users,matches)
-    # q_3(users,matches)
+    q_1(mydb, users, matches, teams,city="East Garyton", team_id = ObjectId('ba933ec98987df4721d0a730'))
+    q_2(users,matches)
+    q_3(users,matches)
 
-    # q_4(users, matches, teams, fname="Cody", 
-    #       city="Lake Jose", team_id = ObjectId('b0ec473622f0b7b355c92d45'))
+    q_4(users, matches, teams, fname="Julia", 
+          city="East Garyton", team_id = ObjectId('ba933ec98987df4721d0a730'))
 
     # q_5(users, matches, teams, fname="Cody", 
     #       city=city[0], team_id = rand_team_id)
     
-    # q_6(users,matches)
+    q_6(users,matches)
     
     print("--- %s seconds ---" % (time.time() - start_time))
 
@@ -278,12 +278,13 @@ if __name__ == "__main__":
     myclient.close()
 
 '''
+    50K:
+    b0ec473622f0b7b355c92d45    Cody    Lake Jose
+    
     2m:
     fname="Lindsay", city="North Eric", team_id = ObjectId('5c7a10973f34b5df9039b307'))
 
     400k:
     ba933ec98987df4721d0a730    Julia   East Garyton
 
-    50K:
-    b0ec473622f0b7b355c92d45    Cody    Lake Jose
 '''
