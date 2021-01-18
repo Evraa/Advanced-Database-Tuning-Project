@@ -90,14 +90,14 @@ def q_2(user_obj, match_obj):
                     
     ]
 
-    match_docs = match_obj.aggregate(pipeline)
-    print ("Printing Results..")
-    count = 0
-    for match_doc in match_docs:
+    # match_docs = match_obj.aggregate(pipeline)
+    # print ("Printing Results..")
+    # count = 0
+    # for match_doc in match_docs:
         
-        # pprint.pprint(match_doc)
-        count+=1
-    print (f'Results Count: {count}')
+    #     # pprint.pprint(match_doc)
+    #     count+=1
+    # print (f'Results Count: {count}')
 
 def q_3(user_obj, match_obj):
     '''
@@ -107,8 +107,8 @@ def q_3(user_obj, match_obj):
     pipeline = [
         {'$project': {'_id':0, 'users_reserved.y_i':1,'users_reserved.x_i':1, 'users_reserved.user_id':1}},
         {'$unwind': '$users_reserved'},
-        {'$match': {  '$and': [ {'users_reserved.y_i': {'$gt':10}} , 
-                                {'users_reserved.x_i': {'$gt':10}}
+        {'$match': {  '$and': [ {'users_reserved.y_i': {'$gt':11}} , 
+                                {'users_reserved.x_i': {'$gt':11}}
                             ] 
                     }},
 
@@ -152,9 +152,10 @@ def q_4(user_obj, match_obj,team_obj, fname, city, team_id):
             'as':'users_info'
         }},
         #4- get fans at specific city
-        {'$match': {'users_info.city':city} },
+        # {'$match': {'users_info.city':city} },
         #4-2 specific fname
-        {'$match': {'users_info.fname':fname} },
+        # {'$match': {'users_info.fname':fname} },
+        {'$match': {'$or': [{'users_info.fname': {'$eq':fname}} , {'users_info.city': {'$eq':city}}]}},
         #5- project results
         {'$project':{'_id':0,'fname':'$users_info.fname','lname':'$users_info.lname'}}
     ]
@@ -193,14 +194,14 @@ def q_6(user_obj, match_obj):
                     
     ]
 
-    match_docs = match_obj.aggregate(pipeline)
-    print ("Printing Results..")
-    count = 0
-    for match_doc in match_docs:
+    # match_docs = match_obj.aggregate(pipeline)
+    # print ("Printing Results..")
+    # count = 0
+    # for match_doc in match_docs:
         
-        # pprint.pprint(match_doc)
-        count+=1
-    print (f'Results Count: {count}')
+    #     # pprint.pprint(match_doc)
+    #     count+=1
+    # print (f'Results Count: {count}')
 
 
 def get_teams_fans(user_obj, match_obj,team_obj, team_id):
@@ -242,7 +243,7 @@ def get_random_team_id(team_obj):
     return team_id
 
 if __name__ == "__main__":
-    mydb, myclient = create_client("adv_db_prj_2")
+    mydb, myclient = create_client("adv_db_prj_3")
     users, matches, stadiums, teams = mydb['users'], mydb['matches'],mydb['stadiums'],mydb['teams']
 
     ## PREPROCESSING ##
@@ -253,12 +254,12 @@ if __name__ == "__main__":
     print ("START>>")
     start_time = time.time()
 
-    q_1(mydb, users, matches, teams,city="East Garyton", team_id = ObjectId('ba933ec98987df4721d0a730'))
-    q_2(users,matches)
-    q_3(users,matches)
+    # q_1(mydb, users, matches, teams,city="East Garyton", team_id = ObjectId('ba933ec98987df4721d0a730'))
+    # q_2(users,matches)
+    # q_3(users,matches)
 
-    q_4(users, matches, teams, fname="Julia", 
-          city="East Garyton", team_id = ObjectId('ba933ec98987df4721d0a730'))
+    # q_4(users, matches, teams, fname="Cody", 
+    #       city="Lake Jose", team_id = ObjectId('b0ec473622f0b7b355c92d45'))
 
     # q_5(users, matches, teams, fname="Cody", 
     #       city=city[0], team_id = rand_team_id)
